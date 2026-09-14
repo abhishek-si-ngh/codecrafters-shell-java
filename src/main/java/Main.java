@@ -23,7 +23,7 @@ public class Main {
                 else if(command.substring(5).equals("echo"))
                     System.out.println(command.substring(5)+" is a shell builtin");
                 else if(command.substring(5).equals("type"))
-                    System.out.println(command.substring(5)+"is a shell builtin");
+                    System.out.println(command.substring(5)+" is a shell builtin");
                 else
                     System.out.println(command.substring(5)+": command not found");         
             }
