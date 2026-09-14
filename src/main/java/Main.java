@@ -12,9 +12,9 @@ public class Main {
             if(command.equals("exit"))
                 break;
 
-            else if(command.startsWith("echo"))
+            else if(command.startsWith("echo "))
             {
-                System.out.println(command.subString(6));
+                System.out.println(command.subString(5));
             }
             else
             System.out.println(command+": command not found");
