@@ -9,5 +9,6 @@ public class Main {
             
             String command=sc.nextLine();
             System.out.println(command+": command not found");
+        }
     }
 }
