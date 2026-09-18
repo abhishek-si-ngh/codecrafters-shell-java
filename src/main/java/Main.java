@@ -1,5 +1,8 @@
 import java.util.Scanner;
-
+import java.io.*;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.Path;
 public class Main {
     public static void main(String[] args) throws Exception {
 
@@ -18,15 +21,32 @@ public class Main {
             }
             else if(command.startsWith("type "))
             {
-                if(command.substring(5).equals("exit"))
-                    System.out.println(command.substring(5)+" is a shell builtin");
-                else if(command.substring(5).equals("echo"))
-                    System.out.println(command.substring(5)+" is a shell builtin");
-                else if(command.substring(5).equals("type"))
-                    System.out.println(command.substring(5)+" is a shell builtin");
-                //else if(command.substring(5))
+                String commandName = command.substring(5);
+                String path=System.getenv("PATH");
+                String directories[]=path.split(File.pathSeparator);
+
+                if(commandName.equals("exit"))
+                    System.out.println(commandName+" is a shell builtin");
+                else if(commandName.equals("echo"))
+                    System.out.println(commandName+" is a shell builtin");
+                else if(commandName.equals("type"))
+                    System.out.println(commandName+" is a shell builtin");
                 else
-                    System.out.println(command.substring(5)+": not found");         
+                {
+                    boolean found=false;
+                    for(String dir:directories)
+                    {
+                        Path newPath=Paths.get(dir+"/"+commandName);
+                        if(Files.exists(newPath) && Files.isExecutable(newPath))
+                        {
+                            System.out.println(commandName+" is "+newPath);
+                            found=true;
+                            break;
+                        }
+                    }
+                    if(found==false)
+                    System.out.println(command.substring(5)+": not found");
+                }
             }
             else
             System.out.println(command+": command not found");
