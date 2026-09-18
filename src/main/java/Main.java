@@ -24,6 +24,7 @@ public class Main {
                     System.out.println(command.substring(5)+" is a shell builtin");
                 else if(command.substring(5).equals("type"))
                     System.out.println(command.substring(5)+" is a shell builtin");
+                //else if(command.substring(5))
                 else
                     System.out.println(command.substring(5)+": not found");         
             }
