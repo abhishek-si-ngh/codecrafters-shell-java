@@ -1,78 +1,164 @@
-import java.util.Scanner;
+import java.util.*;
 import java.io.*;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.Path;
-public class Main {
-    public static void main(String[] args) throws Exception {
 
+
+
+public class Main 
+{
+    public static void main(String[] args) throws Exception 
+    {
+
+        Scanner sc=new Scanner(System.in);
         
-        while(true){
+        while(true)
+        {
             System.out.print("$ ");
             
-            Scanner sc=new Scanner(System.in);
             String command=sc.nextLine();
-            if(command.equals("exit"))
+
+            //Parsing command
+            String commandParts[]=parseCommand(command);
+
+            //Getting command name
+            String commandName=commandParts[0];
+
+            //Handling builtin/external commands
+            if(commandName.equals("exit"))
                 break;
 
-            else if(command.startsWith("echo "))
+            else if(commandName.equals("echo"))
             {
-                System.out.println(command.substring(5));
+                executeEcho(commandParts);
             }
-            else if(command.startsWith("type "))
+            else if(commandName.equals("type"))
             {
-                String commandName = command.substring(5);
-                String path=System.getenv("PATH");
-                String directories[]=path.split(File.pathSeparator);
-
-                if(commandName.equals("exit"))
-                    System.out.println(commandName+" is a shell builtin");
-                else if(commandName.equals("echo"))
-                    System.out.println(commandName+" is a shell builtin");
-                else if(commandName.equals("type"))
-                    System.out.println(commandName+" is a shell builtin");
-                else
-                {
-                    boolean found=false;
-                    for(String dir:directories)
-                    {
-                        Path newPath=Paths.get(dir+"/"+commandName);
-                        if(Files.exists(newPath) && Files.isExecutable(newPath))
-                        {
-                            System.out.println(commandName+" is "+newPath);
-                            found=true;
-                            break;
-                        }
-                    }
-                    if(found==false)
-                    System.out.println(command.substring(5)+": not found");
-                }
+                executeType(commandParts);
             }
             else
             {
-                boolean found=false;
-                String commandParts[]=command.split(" ");
-                String path=System.getenv("PATH");
-                String directories[]=path.split(File.pathSeparator);
-                for(String dir:directories)
-                {
-                    Path newPath=Paths.get(dir+"/"+commandParts[0]);
-                    if(Files.exists(newPath) && Files.isExecutable(newPath))
-                    {
-                        ProcessBuilder pb=new ProcessBuilder();
-                        pb.command(commandParts);
-                        pb.inheritIO();
-                        Process p=pb.start();
-                        p.waitFor();
-                        found=true;
-                        break;
-                    }
-                }
-
-
-                if(found==false)
-                System.out.println(command+": command not found");
+                executeExternalCommand(commandParts);
             }
         }
     }
+
+
+
+    
+
+    //Command parsing method
+
+    public static String[] parseCommand(String command)
+    {
+        ArrayList<String> arguments=new ArrayList<>();
+        String part="";
+        boolean inQuotes=false;
+        for(char ch:command.toCharArray())
+        {
+           if(Character.isWhitespace(ch))
+           {
+                if(inQuotes==true)
+                {
+                    part+=ch;
+                }
+                else
+                {
+                    if(part.length()>0)
+                    arguments.add(part);
+                    part="";
+                }
+           }
+           else if(ch=='\'')
+           {
+                inQuotes=!inQuotes;
+           }
+           else
+           {
+                part+=ch;
+           }
+        }
+        if(part.length()>0)
+            arguments.add(part);
+        return arguments.toArray(new String[0]);
+    }
+
+
+    //Method to execute echo command
+
+    public static void executeEcho(String commandParts[])
+    {
+        for(int i=1;i<commandParts.length;i++)
+        {
+            if(i!=commandParts.length-1)
+                System.out.print(commandParts[i]+" ");
+            else
+                System.out.print(commandParts[i]);
+        }
+    }
+
+
+    //Meethod to execute type command
+
+    public static void executeType(String commandParts[])
+    {
+        if(commandParts[1].equals("exit"))
+            System.out.println(commandParts[1]+" is a shell builtin");
+        else if(commandParts[1].equals("echo"))
+            System.out.println(commandParts[1]+" is a shell builtin");
+        else if(commandParts[1].equals("type"))
+            System.out.println(commandParts[1]+" is a shell builtin");
+        else
+        {
+            boolean found=false;
+            Path result=findExecutable(commandParts[1]);
+            if(result!=null)
+            {
+                System.out.println(commandParts[1]+" is "+result);
+                found=true;
+            }
+
+            if(found==false)
+            System.out.println(commandParts[1]+": not found");
+        }
+    }
+
+
+    //Method to find executable command in path
+
+    public static Path findExecutable(String commandName)
+    {
+        String path=System.getenv("PATH");
+        String directories[]=path.split(File.pathSeparator);
+        for(String dir:directories)
+        {
+            Path newPath=Paths.get(dir+"/"+commandName);
+            if(Files.exists(newPath) && Files.isExecutable(newPath))
+                return newPath;
+        }
+        return null;
+    }
+
+
+    //Method to execute external commands
+
+    public static void executeExternalCommand(String commandParts[])
+    {
+        boolean found=false;
+
+        if(findExecutable(commandParts[0])!=null) 
+        {
+            ProcessBuilder pb=new ProcessBuilder();
+            pb.command(commandParts);
+            pb.inheritIO();
+            Process p=pb.start();
+            p.waitFor();
+            found=true;
+        }
+        
+        if(found==false)
+        System.out.println(commandParts[0]+": command not found");
+    }
 }
+
