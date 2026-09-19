@@ -51,16 +51,16 @@ public class Main {
             else
             {
                 boolean found=false;
-                String args[]=command.split(" ");
+                String commandParts[]=command.split(" ");
                 String path=System.getenv("PATH");
                 String directories[]=path.split(File.pathSeparator);
                 for(String dir:directories)
                 {
-                    Path newPath=Paths.get(dir+"/"+args[0]);
+                    Path newPath=Paths.get(dir+"/"+commandParts[0]);
                     if(Files.exists(newPath) && Files.isExecutable(newPath))
                     {
                         ProcessBuilder pb=new ProcessBuilder();
-                        pb.command(args);
+                        pb.command(commandParts);
                         pb.inheritIO();
                         Process p=pb.start();
                         p.waitFor();
