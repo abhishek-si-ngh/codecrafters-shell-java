@@ -42,6 +42,7 @@ public class Main
                 executeExternalCommand(commandParts);
             }
         }
+        sc.close();
     }
 
 
@@ -54,12 +55,12 @@ public class Main
     {
         ArrayList<String> arguments=new ArrayList<>();
         String part="";
-        boolean inQuotes=false;
+        char quoteChar='\u0000';
         for(char ch:command.toCharArray())
         {
            if(Character.isWhitespace(ch))
            {
-                if(inQuotes==true)
+                if(quoteChar!='\u0000')
                 {
                     part+=ch;
                 }
@@ -70,9 +71,15 @@ public class Main
                     part="";
                 }
            }
-           else if(ch=='\'')
+           else if(ch=='\'' || ch=='\"')
            {
-                inQuotes=!inQuotes;
+                if(quoteChar=='\u0000')
+                    quoteChar=ch;
+                else if(quoteChar==ch)
+                    quoteChar='\u0000';
+                else
+                    part+=ch;
+
            }
            else
            {
