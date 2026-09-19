@@ -96,6 +96,7 @@ public class Main
             else
                 System.out.print(commandParts[i]);
         }
+        System.out.println();
     }
 
 
@@ -103,24 +104,22 @@ public class Main
 
     public static void executeType(String commandParts[])
     {
-        if(commandParts[1].equals("exit"))
-            System.out.println(commandParts[1]+" is a shell builtin");
-        else if(commandParts[1].equals("echo"))
-            System.out.println(commandParts[1]+" is a shell builtin");
-        else if(commandParts[1].equals("type"))
-            System.out.println(commandParts[1]+" is a shell builtin");
+        String target=commandParts[1];
+        if(target.equals("exit"))
+            System.out.println(target+" is a shell builtin");
+        else if(target.equals("echo"))
+            System.out.println(target+" is a shell builtin");
+        else if(target.equals("type"))
+            System.out.println(target+" is a shell builtin");
         else
         {
-            boolean found=false;
-            Path result=findExecutable(commandParts[1]);
+            Path result=findExecutable(target);
             if(result!=null)
             {
-                System.out.println(commandParts[1]+" is "+result);
-                found=true;
+                System.out.println(target+" is "+result);
             }
-
-            if(found==false)
-            System.out.println(commandParts[1]+": not found");
+            else
+            System.out.println(target+": not found");
         }
     }
 
@@ -130,10 +129,14 @@ public class Main
     public static Path findExecutable(String commandName)
     {
         String path=System.getenv("PATH");
+
+        if(path==null)
+        return null;
+
         String directories[]=path.split(File.pathSeparator);
         for(String dir:directories)
         {
-            Path newPath=Paths.get(dir+"/"+commandName);
+            Path newPath=Paths.get(dir,commandName);
             if(Files.exists(newPath) && Files.isExecutable(newPath))
                 return newPath;
         }
@@ -143,21 +146,18 @@ public class Main
 
     //Method to execute external commands
 
-    public static void executeExternalCommand(String commandParts[])
+    public static void executeExternalCommand(String commandParts[]) throws Execption
     {
-        boolean found=false;
+        Path executable=findExecutable(commandParts[0]);
 
-        if(findExecutable(commandParts[0])!=null) 
+        if(executable!=null) 
         {
-            ProcessBuilder pb=new ProcessBuilder();
-            pb.command(commandParts);
+            ProcessBuilder pb=new ProcessBuilder(commandParts);
             pb.inheritIO();
             Process p=pb.start();
             p.waitFor();
-            found=true;
         }
-        
-        if(found==false)
+        else
         System.out.println(commandParts[0]+": command not found");
     }
 }
