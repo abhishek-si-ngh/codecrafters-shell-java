@@ -146,7 +146,7 @@ public class Main
 
     //Method to execute external commands
 
-    public static void executeExternalCommand(String commandParts[]) throws Execption
+    public static void executeExternalCommand(String commandParts[]) throws Exception
     {
         Path executable=findExecutable(commandParts[0]);
 
