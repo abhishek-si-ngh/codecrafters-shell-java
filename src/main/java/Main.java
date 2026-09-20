@@ -56,13 +56,15 @@ public class Main
         ArrayList<String> arguments=new ArrayList<>();
         String part="";
         char quoteChar='\u0000';
+        boolean escape=false;
         for(char ch:command.toCharArray())
         {
            if(Character.isWhitespace(ch))
            {
-                if(quoteChar!='\u0000')
+                if(quoteChar!='\u0000'|| escape)
                 {
                     part+=ch;
+                    escape=false;
                 }
                 else
                 {
@@ -71,7 +73,7 @@ public class Main
                     part="";
                 }
            }
-           else if(ch=='\'' || ch=='\"')
+           else if((ch=='\'' || ch=='\"') && !escape)
            {
                 if(quoteChar=='\u0000')
                     quoteChar=ch;
@@ -81,9 +83,15 @@ public class Main
                     part+=ch;
 
            }
+           else if(ch=='\\'&& !escape)
+           {
+                escape=true;
+           }
            else
            {
                 part+=ch;
+                if(escape)
+                    escape=false;
            }
         }
         if(part.length()>0)
@@ -92,6 +100,7 @@ public class Main
     }
 
 
+    
     //Method to execute echo command
 
     public static void executeEcho(String commandParts[])
