@@ -83,7 +83,7 @@ public class Main
                     part+=ch;
 
            }
-           else if(ch=='\\'&& !escape)
+           else if(ch=='\\'&& !escape && quoteChar=='\u0000')
            {
                 escape=true;
            }
