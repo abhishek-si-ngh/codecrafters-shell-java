@@ -56,43 +56,105 @@ public class Main
         ArrayList<String> arguments=new ArrayList<>();
         String part="";
         char quoteChar='\u0000';
-        boolean escape=false;
-        for(char ch:command.toCharArray())
-        {
-           if(Character.isWhitespace(ch))
-           {
-                if(quoteChar!='\u0000'|| escape)
-                {
-                    part+=ch;
-                    escape=false;
-                }
-                else
-                {
-                    if(part.length()>0)
-                    arguments.add(part);
-                    part="";
-                }
-           }
-           else if((ch=='\'' || ch=='\"') && !escape)
-           {
-                if(quoteChar=='\u0000')
-                    quoteChar=ch;
-                else if(quoteChar==ch)
-                    quoteChar='\u0000';
-                else
-                    part+=ch;
+        // boolean escape=false;
+        // for(char ch:command.toCharArray())
+        // {
+        //    if(Character.isWhitespace(ch))
+        //    {
+        //         if(quoteChar!='\u0000'|| escape)
+        //         {
+        //             part+=ch;
+        //             escape=false;
+        //         }
+        //         else
+        //         {
+        //             if(part.length()>0)
+        //             arguments.add(part);
+        //             part="";
+        //         }
+        //    }
+        //    else if((ch=='\'' || ch=='\"') && !escape)
+        //    {
+        //         if(quoteChar=='\u0000')
+        //             quoteChar=ch;
+        //         else if(quoteChar==ch)
+        //             quoteChar='\u0000';
+        //         else
+        //             part+=ch;
 
-           }
-           else if(ch=='\\'&& !escape && quoteChar=='\u0000')
-           {
-                escape=true;
-           }
-           else
-           {
-                part+=ch;
-                if(escape)
-                    escape=false;
-           }
+        //    }
+        //    else if(ch=='\\'&& !escape )
+        //    {
+        //         if(quoteChar=='\'')
+        //             part+=ch;
+        //         else
+        //             escape=true;
+        //    }
+        //    else
+        //    {
+        //         part+=ch;
+        //         if(escape)
+        //             escape=false;
+        //    }
+        // }
+
+        for(int i=0;i<command.length();i++)
+        {
+            char ch=command.charAt(i);
+            if((ch=='\'' || ch=='\"') && quoteChar=='\u0000')
+            {
+                quoteChar=ch;
+            }
+            else
+            {
+                if(ch==quoteChar)
+                {
+                    quoteChar='\u0000';
+                    continue;
+                }
+                if(quoteChar=='\'')
+                {
+                    part+=ch;
+                }
+                else if(quoteChar=='\"')
+                {
+                    if(ch=='\\')
+                    {
+                        if(i!=command.length()-1 && (command.charAt(i+1)=='\"' || command.charAt(i+1)=='\\'))
+                        {
+                            part+=command.charAt(i+1);
+                            i++;
+                        }
+                        else
+                            part+=ch;
+                    }
+                    else
+                        part+=ch;
+                }
+                else
+                {
+                    if(Character.isWhitespace(ch))
+                    {
+                            if(part.length()>0)
+                                arguments.add(part);
+                            part="";
+
+                    }
+                    else
+                    {
+                        if(ch=='\\')
+                        {
+                            if(i!=command.length()-1)
+                            {
+                                part+=command.charAt(i+1);
+                            }
+                            i++;
+                            continue;
+                        }
+                        part+=ch;
+                    }
+                }
+            }
         }
         if(part.length()>0)
             arguments.add(part);
