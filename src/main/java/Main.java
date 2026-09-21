@@ -22,6 +22,12 @@ public class Main
             //Parsing command
             String commandParts[]=parseCommand(command);
 
+            String outPutFile=handleRedirection(commandParts);
+            if(outPutFile!=null)
+            {
+                commandParts=Arrays.copyOf(commandParts,commandParts.length-2);
+            }
+
             //Getting command name
             String commandName=commandParts[0];
 
@@ -31,7 +37,7 @@ public class Main
 
             else if(commandName.equals("echo"))
             {
-                executeEcho(commandParts);
+                executeEcho(commandParts,outPutFile);
             }
             else if(commandName.equals("type"))
             {
@@ -39,11 +45,34 @@ public class Main
             }
             else
             {
-                executeExternalCommand(commandParts);
+                executeExternalCommand(commandParts,outPutFile);
             }
         }
         sc.close();
     }
+
+
+    //Redirection Detection
+
+    public static String handleRedirection(String commandParts[])
+    {
+        String outPutFile="";
+        List<String> commandList=Arrays.asList(commandParts);
+
+        for(int i=0;i<commandList.size();i++)
+        {
+            String com=commandList.get(i);
+            if(com.equals(">") || com.equals("1>"))
+                if((i+1< commandList.size()))
+                {
+                    outPutFile=commandList.get(i+1);
+                    return outPutFile;
+                }
+        }
+        return null;
+    }
+
+
 
 
 
@@ -66,15 +95,23 @@ public class Main
             }
             else
             {
+                //Checking if closing quote is found
+
                 if(ch==quoteChar)
                 {
                     quoteChar='\u0000';
                     continue;
                 }
+
+                //Checking if inside single quotes
+
                 if(quoteChar=='\'')
                 {
                     part+=ch;
                 }
+
+                //Checking if inside double quotes
+
                 else if(quoteChar=='\"')
                 {
                     if(ch=='\\')
@@ -90,6 +127,9 @@ public class Main
                     else
                         part+=ch;
                 }
+
+                //Checking if outside quotes
+
                 else
                 {
                     if(Character.isWhitespace(ch))
@@ -115,6 +155,9 @@ public class Main
                 }
             }
         }
+
+        //Adding the last part of the command if it is not empty
+
         if(part.length()>0)
             arguments.add(part);
         return arguments.toArray(new String[0]);
@@ -124,16 +167,35 @@ public class Main
     
     //Method to execute echo command
 
-    public static void executeEcho(String commandParts[])
+    public static void executeEcho(String commandParts[],String outPutFile) throws Exception
     {
-        for(int i=1;i<commandParts.length;i++)
-        {
-            if(i!=commandParts.length-1)
-                System.out.print(commandParts[i]+" ");
-            else
-                System.out.print(commandParts[i]);
+        PrintStream originalOut=System.out;
+        PrintStream redirectedOut=null;
+        try{
+
+            if(outPutFile!=null)
+            {
+                redirectedOut=new PrintStream(new FileOutputStream(outPutFile),true);
+                System.setOut(redirectedOut);
+            }
+            for(int i=1;i<commandParts.length;i++)
+            {
+                if(i!=commandParts.length-1)
+                    System.out.print(commandParts[i]+" ");
+                else
+                    System.out.print(commandParts[i]);
+            }
+            System.out.println();
         }
-        System.out.println();
+        catch( Exception e)
+        {
+            System.out.println("Error "+e.getMessage());
+        }
+        finally{
+            System.setOut(originalOut);
+            if(redirectedOut!=null)
+                redirectedOut.close();
+        }
     }
 
 
@@ -183,14 +245,23 @@ public class Main
 
     //Method to execute external commands
 
-    public static void executeExternalCommand(String commandParts[]) throws Exception
+    public static void executeExternalCommand(String commandParts[],String outPutFile) throws Exception
     {
         Path executable=findExecutable(commandParts[0]);
 
         if(executable!=null) 
         {
             ProcessBuilder pb=new ProcessBuilder(commandParts);
-            pb.inheritIO();
+
+            if(outPutFile!=null)
+            {
+                pb.redirectOutput(ProcessBuilder.Redirect.to(new File(outPutFile)));
+                pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
+            }
+            else
+                pb.inheritIO();
+
             Process p=pb.start();
             p.waitFor();
         }
