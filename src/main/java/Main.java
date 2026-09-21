@@ -56,47 +56,6 @@ public class Main
         ArrayList<String> arguments=new ArrayList<>();
         String part="";
         char quoteChar='\u0000';
-        // boolean escape=false;
-        // for(char ch:command.toCharArray())
-        // {
-        //    if(Character.isWhitespace(ch))
-        //    {
-        //         if(quoteChar!='\u0000'|| escape)
-        //         {
-        //             part+=ch;
-        //             escape=false;
-        //         }
-        //         else
-        //         {
-        //             if(part.length()>0)
-        //             arguments.add(part);
-        //             part="";
-        //         }
-        //    }
-        //    else if((ch=='\'' || ch=='\"') && !escape)
-        //    {
-        //         if(quoteChar=='\u0000')
-        //             quoteChar=ch;
-        //         else if(quoteChar==ch)
-        //             quoteChar='\u0000';
-        //         else
-        //             part+=ch;
-
-        //    }
-        //    else if(ch=='\\'&& !escape )
-        //    {
-        //         if(quoteChar=='\'')
-        //             part+=ch;
-        //         else
-        //             escape=true;
-        //    }
-        //    else
-        //    {
-        //         part+=ch;
-        //         if(escape)
-        //             escape=false;
-        //    }
-        // }
 
         for(int i=0;i<command.length();i++)
         {
