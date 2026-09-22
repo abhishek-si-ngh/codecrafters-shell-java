@@ -70,7 +70,7 @@ public class Main
         for(int i=0;i<commandList.size();i++)
         {
             String com=commandList.get(i);
-            if(com.equals(">") || com.equals("1>") || com.equals("2>") || com.equals(">>") || com.equals("1>>"))
+            if(com.equals(">") || com.equals("1>") || com.equals("2>") || com.equals(">>") || com.equals("1>>") || com.equals("2>>"))
                 if((i+1< commandList.size()))
                 {
                     return new Redirection(com, commandList.get(i+1));
@@ -196,6 +196,10 @@ public class Main
                     redirectedOut=redirectStdoutAppend(redirection.outPutFile);
                     System.setOut(redirectedOut);
                 }
+                else if(redirection.operator.equals("2>>"))
+                {
+                    createOrAppendFile(redirection.outPutFile);
+                }
             }
             for(int i=1;i<commandParts.length;i++)
             {
@@ -232,6 +236,10 @@ public class Main
         new FileOutputStream(file).close();
     }
 
+    public static void createOrAppendFile(String file)throws IOException
+    {
+        new FileOutputStream(file, true).close();
+    }
 
     //Meethod to execute type command
 
@@ -303,6 +311,11 @@ public class Main
                 {
                     pb.redirectOutput(ProcessBuilder.Redirect.appendTo(new File(redirection.outPutFile)));
                     pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                }
+                else if(redirection.operator.equals("2>>"))
+                {
+                    pb.redirectError(ProcessBuilder.Redirect.appendTo(new File(redirection.outPutFile)));
+                    pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
                 }
                 pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
             }
