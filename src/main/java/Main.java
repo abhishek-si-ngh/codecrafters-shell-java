@@ -70,7 +70,7 @@ public class Main
         for(int i=0;i<commandList.size();i++)
         {
             String com=commandList.get(i);
-            if(com.equals(">") || com.equals("1>") || com.equals("2>"))
+            if(com.equals(">") || com.equals("1>") || com.equals("2>") || com.equals(">>") || com.equals("1>>"))
                 if((i+1< commandList.size()))
                 {
                     return new Redirection(com, commandList.get(i+1));
@@ -191,6 +191,11 @@ public class Main
                 {
                     createOrTruncateFile(redirection.outPutFile);
                 }
+                else if(redirection.operator.equals(">>") || redirection.operator.equals("1>>"))
+                {
+                    redirectedOut=redirectStdoutAppend(redirection.outPutFile);
+                    System.setOut(redirectedOut);
+                }
             }
             for(int i=1;i<commandParts.length;i++)
             {
@@ -215,6 +220,11 @@ public class Main
     public static PrintStream redirectStdout(String file)throws FileNotFoundException
     {
         return new PrintStream(new FileOutputStream(file),true);
+    }
+
+    public static PrintStream redirectStdoutAppend(String file)throws FileNotFoundException
+    {
+        return new PrintStream(new FileOutputStream(file,true),true);
     }
 
     public static void createOrTruncateFile(String file)throws IOException
@@ -283,12 +293,16 @@ public class Main
                 {
                     pb.redirectOutput(ProcessBuilder.Redirect.to(new File(redirection.outPutFile)));
                     pb.redirectError(ProcessBuilder.Redirect.INHERIT);
-                    
                 }
                 else if(redirection.operator.equals("2>"))
                 {
                     pb.redirectError(ProcessBuilder.Redirect.to(new File(redirection.outPutFile)));
                     pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+                }
+                else if(redirection.operator.equals(">>") || redirection.operator.equals("1>>"))
+                {
+                    pb.redirectOutput(ProcessBuilder.Redirect.appendTo(new File(redirection.outPutFile)));
+                    pb.redirectError(ProcessBuilder.Redirect.INHERIT);
                 }
                 pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
             }
