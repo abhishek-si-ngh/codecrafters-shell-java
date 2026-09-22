@@ -22,8 +22,8 @@ public class Main
             //Parsing command
             String commandParts[]=parseCommand(command);
 
-            String outPutFile=handleRedirection(commandParts);
-            if(outPutFile!=null)
+            Redirection redirection=handleRedirection(commandParts);
+            if(redirection!=null)
             {
                 commandParts=Arrays.copyOf(commandParts,commandParts.length-2);
             }
@@ -37,7 +37,7 @@ public class Main
 
             else if(commandName.equals("echo"))
             {
-                executeEcho(commandParts,outPutFile);
+                executeEcho(commandParts,redirection);
             }
             else if(commandName.equals("type"))
             {
@@ -45,28 +45,35 @@ public class Main
             }
             else
             {
-                executeExternalCommand(commandParts,outPutFile);
+                executeExternalCommand(commandParts,redirection);
             }
         }
         sc.close();
     }
 
-
+    static class Redirection
+    {
+        String operator;
+        String outPutFile;
+        Redirection(String operator,String outPutFile)
+        {
+            this.operator=operator;
+            this.outPutFile=outPutFile;
+        }
+    } 
     //Redirection Detection
 
-    public static String handleRedirection(String commandParts[])
+    public static Redirection handleRedirection(String commandParts[])
     {
-        String outPutFile="";
         List<String> commandList=Arrays.asList(commandParts);
 
         for(int i=0;i<commandList.size();i++)
         {
             String com=commandList.get(i);
-            if(com.equals(">") || com.equals("1>"))
+            if(com.equals(">") || com.equals("1>") || com.equals("2>"))
                 if((i+1< commandList.size()))
                 {
-                    outPutFile=commandList.get(i+1);
-                    return outPutFile;
+                    return new Redirection(com, commandList.get(i+1));
                 }
         }
         return null;
@@ -167,16 +174,23 @@ public class Main
     
     //Method to execute echo command
 
-    public static void executeEcho(String commandParts[],String outPutFile) throws Exception
+    public static void executeEcho(String commandParts[],Redirection redirection) throws Exception
     {
         PrintStream originalOut=System.out;
         PrintStream redirectedOut=null;
         try{
 
-            if(outPutFile!=null)
+            if(redirection!=null)
             {
-                redirectedOut=new PrintStream(new FileOutputStream(outPutFile),true);
-                System.setOut(redirectedOut);
+                if(redirection.operator.equals(">") || redirection.operator.equals("1>"))
+                {
+                    redirectedOut=redirectStdout(redirection.outPutFile);
+                    System.setOut(redirectedOut);
+                }
+                else if(redirection.operator.equals("2>"))
+                {
+                    createOrTruncateFile(redirection.outPutFile);
+                }
             }
             for(int i=1;i<commandParts.length;i++)
             {
@@ -196,6 +210,16 @@ public class Main
             if(redirectedOut!=null)
                 redirectedOut.close();
         }
+    }
+
+    public static PrintStream redirectStdout(String file)throws FileNotFoundException
+    {
+        return new PrintStream(new FileOutputStream(file),true);
+    }
+
+    public static void createOrTruncateFile(String file)throws IOException
+    {
+        new FileOutputStream(file).close();
     }
 
 
@@ -245,7 +269,7 @@ public class Main
 
     //Method to execute external commands
 
-    public static void executeExternalCommand(String commandParts[],String outPutFile) throws Exception
+    public static void executeExternalCommand(String commandParts[],Redirection redirection) throws Exception
     {
         Path executable=findExecutable(commandParts[0]);
 
@@ -253,10 +277,19 @@ public class Main
         {
             ProcessBuilder pb=new ProcessBuilder(commandParts);
 
-            if(outPutFile!=null)
+            if(redirection!=null)
             {
-                pb.redirectOutput(ProcessBuilder.Redirect.to(new File(outPutFile)));
-                pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                if(redirection.operator.equals(">") || redirection.operator.equals(("1>")))
+                {
+                    pb.redirectOutput(ProcessBuilder.Redirect.to(new File(redirection.outPutFile)));
+                    pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                    
+                }
+                else if(redirection.operator.equals("2>"))
+                {
+                    pb.redirectError(ProcessBuilder.Redirect.to(new File(redirection.outPutFile)));
+                    pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+                }
                 pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
             }
             else
@@ -266,7 +299,6 @@ public class Main
             p.waitFor();
         }
         else
-        System.out.println(commandParts[0]+": command not found");
+            System.out.println(commandParts[0]+": command not found");
     }
 }
-
