@@ -21,7 +21,7 @@ public class Main
 
         Terminal terminal=TerminalBuilder.builder().build();
 
-        LineReader reader=LineReaderBuilder.builder().terminal(terminal).completer(new BuiltinCompleter()).build();
+        LineReader reader=LineReaderBuilder.builder().terminal(terminal).completer(new BuiltinCompleter()).option(LineReader.Option.DISABLE_EVENT_EXPANSION,true).build();
         
         while(true)
         {
@@ -30,6 +30,7 @@ public class Main
 
             //Parsing command
             String commandParts[]=parseCommand(command);
+
 
             Redirection redirection=handleRedirection(commandParts);
             if(redirection!=null)
