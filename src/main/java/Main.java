@@ -85,7 +85,7 @@ public class Main
                 for(String dir:directories)
                 {
                     File directory=new File(dir);
-                    File files[]=directory.listFile();
+                    File files[]=directory.listFiles();
 
                     if(files==null)
                         continue;
@@ -95,7 +95,7 @@ public class Main
                         String name=file.getName();
                         if(file.isFile() && file.canExecute() && name.startsWith(word))
                         {
-                            candidates.add(new Candidate(name,name,null null," ",null,true));
+                            candidates.add(new Candidate(name,name,null, null," ",null,true));
                         }
                     }
                 }
