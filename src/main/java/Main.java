@@ -68,11 +68,11 @@ public class Main
             String word=line.word();
             if("echo".startsWith(word))
             {
-                candidates.add(new Candidate("echo "));
+                candidates.add(new Candidate("echo", "echo", null, null, " ", null, true));
             }
             if("exit".startsWith(word))
             {
-                candidates.add(new Candidate("exit "));
+                candidates.add(new Candidate("exit", "exit", null, null, " ", null, true));
             }
         }
     }
