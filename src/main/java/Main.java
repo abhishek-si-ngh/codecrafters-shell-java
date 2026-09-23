@@ -1,8 +1,16 @@
 import java.util.*;
+import java.util.concurrent.CompletionService;
 import java.io.*;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.jline.reader.Candidate;
+import org.jline.reader.Completer;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.ParsedLine;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
 
 
@@ -11,13 +19,14 @@ public class Main
     public static void main(String[] args) throws Exception 
     {
 
-        Scanner sc=new Scanner(System.in);
+        Terminal terminal=TerminalBuilder.builder().build();
+
+        LineReader reader=LineReaderBuilder.builder().terminal(terminal).completer(new BuiltinCompleter()).build();
         
         while(true)
         {
-            System.out.print("$ ");
             
-            String command=sc.nextLine();
+            String command=reader.readLine("$ ");
 
             //Parsing command
             String commandParts[]=parseCommand(command);
@@ -48,8 +57,26 @@ public class Main
                 executeExternalCommand(commandParts,redirection);
             }
         }
-        sc.close();
+        terminal.close();
     }
+
+
+    static class BuiltinCompleter implements Completer{
+        @Override
+        public void complete(LineReader reader,ParsedLine line,List<Candidate> candidates)
+        {
+            String word=line.word();
+            if("echo".startsWith(word))
+            {
+                candidates.add(new Candidate("echo "));
+            }
+            if("exit".startsWith(word))
+            {
+                candidates.add(new Candidate("exit "));
+            }
+        }
+    }
+
 
     static class Redirection
     {
