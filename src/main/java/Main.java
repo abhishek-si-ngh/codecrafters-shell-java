@@ -75,6 +75,31 @@ public class Main
             {
                 candidates.add(new Candidate("exit", "exit", null, null, " ", null, true));
             }
+
+            String path=System.getenv("PATH");
+
+            if(path!=null)
+            {
+                String directories[]=path.split(File.pathSeparator);
+
+                for(String dir:directories)
+                {
+                    File directory=new File(dir);
+                    File files[]=directory.listFile();
+
+                    if(files==null)
+                        continue;
+
+                    for(File file:files)
+                    {
+                        String name=file.getName();
+                        if(file.isFile() && file.canExecute() && name.startsWith(word))
+                        {
+                            candidates.add(new Candidate(name,name,null null," ",null,true));
+                        }
+                    }
+                }
+            }
         }
     }
 
