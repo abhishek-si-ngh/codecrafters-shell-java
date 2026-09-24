@@ -210,8 +210,8 @@ public class Main
                     reader.callWidget(LineReader.REDRAW_LINE);
                     reader.callWidget(LineReader.REDISPLAY);
 
-                    reader.getTerminal().write().flush();
-                    
+                    reader.getTerminal().writer().flush();
+
                     return true;
                 }
             }
