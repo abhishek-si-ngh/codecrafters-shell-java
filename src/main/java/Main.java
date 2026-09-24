@@ -203,6 +203,8 @@ public class Main
                     //reader.printAbove(String.join("  ",matches));
                     tabCount=0;
                     reader.callWidget(LineReader.LIST_CHOICES);
+                    reader.callWidget(LineReader.REDRAW_LINE);
+                    reader.callWidget(LineReader.REDISPLAY);
                     return true;
                 }
             }
