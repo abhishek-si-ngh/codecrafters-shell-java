@@ -21,7 +21,7 @@ public class Main
 
         Terminal terminal=TerminalBuilder.builder().build();
 
-        LineReader reader=LineReaderBuilder.builder().terminal(terminal).completer(new BuiltinCompleter()).option(LineReader.Option.DISABLE_EVENT_EXPANSION,true).option(LineReader.Option.AUTO_LIST,true).option(LineReader.Option.LIST_AMBIGUOUS,true).build();
+        LineReader reader=LineReaderBuilder.builder().terminal(terminal).completer(new BuiltinCompleter()).option(LineReader.Option.DISABLE_EVENT_EXPANSION,true).option(LineReader.Option.AUTO_LIST,false).option(LineReader.Option.LIST_AMBIGUOUS,true).build();
         
         while(true)
         {
