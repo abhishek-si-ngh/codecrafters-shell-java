@@ -200,9 +200,9 @@ public class Main
                 // Second TAB → print matches above the prompt.
                 if(tabCount==2)
                 {
-                    reader.printAbove(String.join("  ",matches));
+                    //reader.printAbove(String.join("  ",matches));
                     tabCount=0;
-                    return true;
+                    return reader.callWidget(LineReader.LIST_CHOICES);
                 }
             }
 
