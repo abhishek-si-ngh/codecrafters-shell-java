@@ -11,6 +11,8 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.ParsedLine;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.reader.Widget;
+import org.jline.keymap.KeyMap;
 
 
 
@@ -22,6 +24,12 @@ public class Main
         Terminal terminal=TerminalBuilder.builder().build();
 
         LineReader reader=LineReaderBuilder.builder().terminal(terminal).completer(new BuiltinCompleter()).option(LineReader.Option.DISABLE_EVENT_EXPANSION,true).option(LineReader.Option.AUTO_LIST,false).option(LineReader.Option.LIST_AMBIGUOUS,true).option(LineReader.Option.AUTO_MENU,false).build();
+
+        TabCompletionWidget tabWidget=new TabCompletionWidget(reader);
+
+        reader.getKeyMaps()
+        .get(LineReader.MAIN)
+        .bind(tabWidget, KeyMap.ctrl('I'));
         
         while(true)
         {
@@ -61,6 +69,49 @@ public class Main
         terminal.close();
     }
 
+    public static Set<String> findCompletionMatches(String word)
+    {
+        Set<String> matches=new TreeSet<>();
+
+        if(word.isEmpty())
+            return matches;
+
+        //Builtins
+
+        if("echo".startsWith(word))
+            matches.add("echo");
+        if("exit".startsWith(word))
+            matches.add("exit");
+
+        //External executables
+
+        String path=System.getenv("PATH");
+
+        if(path!=null)
+        {
+            String directories[]=path.split(File.pathSeparator);
+
+            for(String dir:directories)
+            {
+                File directory=new File(dir);
+                File files[]=directory.listFiles();
+
+                if(files==null)
+                    continue;
+
+                for(File file:files)
+                {
+                    String name=file.getName();
+
+                    if(file.isFile() && file.canExecute() && name.startsWith(word))
+                    {
+                        matches.add(name);
+                    }
+                }
+            }
+        }
+        return matches;
+    }
 
     static class BuiltinCompleter implements Completer
     {
@@ -68,48 +119,96 @@ public class Main
         public void complete(LineReader reader,ParsedLine line,List<Candidate> candidates)
         {
             String word=line.word();
-            if("echo".startsWith(word))
+
+            Set<String> matches=findCompletionMatches(word);
+
+            for(String name:matches)
             {
-                candidates.add(new Candidate("echo", "echo", null, null, " ", null, true));
-            }
-            if("exit".startsWith(word))
-            {
-                candidates.add(new Candidate("exit", "exit", null, null, " ", null, true));
-            }
-
-            String path=System.getenv("PATH");
-            Set<String> matches=new TreeSet<>();
-
-            if(path!=null)
-            {
-                String directories[]=path.split(File.pathSeparator);
-
-                for(String dir:directories)
-                {
-                    File directory=new File(dir);
-                    File files[]=directory.listFiles();
-
-                    if(files==null)
-                        continue;
-
-                    for(File file:files)
-                    {
-                        String name=file.getName();
-                        if(file.isFile() && file.canExecute() && name.startsWith(word))
-                        {
-                            matches.add(name);
-                        }
-                    }
-                }
-
-                for(String name:matches)
-                {
-                    candidates.add(new Candidate(name,name,null,null," ",null,false));
-                }
+                candidates.add(new Candidate(name,name,null,null," ",null,true));
             }
         }
     }
 
+    static class TabCompletionWidget implements Widget
+    {
+        private final LineReader reader;
+        private String lastBuffer="";
+        private int tabCount=0;
+
+        TabCompletionWidget(LineReader reader)
+        {
+            this.reader=reader;
+        }
+
+        @Override
+        public boolean apply()
+        {
+            //System.out.println("TAB WIDGET CALLED");
+            String buffer=reader.getBuffer().toString();
+            int cursor=reader.getBuffer().cursor();
+
+            ParsedLine line=reader.getParser().parse(
+            buffer,
+            cursor,
+            org.jline.reader.Parser.ParseContext.COMPLETE
+            );
+
+            String word=line.word();
+
+            if(!buffer.equals(lastBuffer))
+            {
+                lastBuffer=buffer;
+                tabCount=0;
+            }
+
+            Set<String> matches=findCompletionMatches(word);
+
+            // No matches:
+            // Let JLine perform normal completion.
+            // It will ring the bell because there are no candidates.
+            if(matches.size()==0)
+            {
+                reader.callWidget(LineReader.BEEP);
+                tabCount=0;
+                return true;
+            }
+
+            // Exactly one match:
+            // Let JLine perform normal completion.
+            if(matches.size()==1)
+            {
+                reader.callWidget(LineReader.COMPLETE_WORD);
+                tabCount=0;
+                return true;
+            }
+
+
+            // Multiple matches
+
+            if(matches.size()>1)
+            {
+                tabCount++;
+    
+                // First TAB → return false.
+                // JLine will ring the bell automatically.
+                if(tabCount==1)
+                {
+                    reader.callWidget(LineReader.BEEP);
+                    return false;
+                }
+    
+                // Second TAB → print matches above the prompt.
+                if(tabCount==2)
+                {
+                    reader.printAbove(String.join("  ",matches));
+                    tabCount=0;
+                    return true;
+                }
+            }
+
+            return true;
+        }
+    }
 
     static class Redirection
     {
