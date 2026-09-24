@@ -21,7 +21,7 @@ public class Main
 
         Terminal terminal=TerminalBuilder.builder().build();
 
-        LineReader reader=LineReaderBuilder.builder().terminal(terminal).completer(new BuiltinCompleter()).option(LineReader.Option.DISABLE_EVENT_EXPANSION,true).build();
+        LineReader reader=LineReaderBuilder.builder().terminal(terminal).completer(new BuiltinCompleter()).option(LineReader.Option.DISABLE_EVENT_EXPANSION,true).option(LineReader.Option.AUTO_LIST,true).option(LineReader.Option.LIST_AMBIGUOUS,true).build();
         
         while(true)
         {
@@ -62,7 +62,8 @@ public class Main
     }
 
 
-    static class BuiltinCompleter implements Completer{
+    static class BuiltinCompleter implements Completer
+    {
         @Override
         public void complete(LineReader reader,ParsedLine line,List<Candidate> candidates)
         {
@@ -77,6 +78,7 @@ public class Main
             }
 
             String path=System.getenv("PATH");
+            Set<String> matches=new TreeSet<>();
 
             if(path!=null)
             {
@@ -95,9 +97,14 @@ public class Main
                         String name=file.getName();
                         if(file.isFile() && file.canExecute() && name.startsWith(word))
                         {
-                            candidates.add(new Candidate(name,name,null, null," ",null,true));
+                            matches.add(name);
                         }
                     }
+                }
+
+                for(String name:matches)
+                {
+                    candidates.add(new Candidate(name,name,null,null," ",null,false));
                 }
             }
         }
