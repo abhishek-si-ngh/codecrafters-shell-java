@@ -202,7 +202,8 @@ public class Main
                 {
                     //reader.printAbove(String.join("  ",matches));
                     tabCount=0;
-                    return reader.callWidget(LineReader.LIST_CHOICES);
+                    reader.callWidget(LineReader.LIST_CHOICES);
+                    return true;
                 }
             }
 
