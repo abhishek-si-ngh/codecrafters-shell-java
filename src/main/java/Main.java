@@ -113,6 +113,23 @@ public class Main
         return matches;
     }
 
+    public static String longestCommonPrefix(Set<String> matches)
+    {
+        String matchString[]=matches.toArray(new String[0]);
+        String prefix=matchString[0];
+
+        for(String match:matchString)
+        {
+            while(!match.startsWith(prefix))
+            {
+                prefix=prefix.substring(0,prefix.length()-1);
+                if(prefix.equals(null))
+                    break;
+            }
+        }
+        return prefix;
+    }
+
     static class BuiltinCompleter implements Completer
     {
         @Override
@@ -187,42 +204,36 @@ public class Main
 
             if(matches.size()>1)
             {
-                tabCount++;
+                String prefix=longestCommonPrefix(matches);
+                if(!prefix.equals(word))
+                {
+                    String addition=prefix.substring(word.length());
+                    reader.putString(addition);
+                }
+                return true;
+                //tabCount++;
     
                 // First TAB → return false.
                 // JLine will ring the bell automatically.
-                if(tabCount==1)
-                {
-                    reader.callWidget(LineReader.BEEP);
-                    return false;
-                }
+                // if(tabCount==1)
+                // {
+                //     reader.callWidget(LineReader.BEEP);
+                //     return false;
+                // }
     
                 // Second TAB → print matches above the prompt.
-                if(tabCount==2)
-                {
-                    //reader.printAbove(String.join("  ",matches));
-                    tabCount=0;
+                // if(tabCount==2)
+                // {
+                //     tabCount=0;
 
-                    String currentBuffer=reader.getBuffer().toString();
+                //     String currentBuffer=reader.getBuffer().toString();
 
-                    reader.getTerminal().writer().print("\r\n");
-                    reader.getTerminal().writer().println(String.join("  ",matches));
-                    reader.getTerminal().writer().print("$ "+currentBuffer);
-                    reader.getTerminal().writer().flush();
-
-                    // reader.callWidget(LineReader.CLEAR);
-
-                    // reader.getTerminal().writer().println(String.join(" ",matches));
-                    // //reader.callWidget(LineReader.LIST_CHOICES);
-                    // reader.callWidget(LineReader.REDRAW_LINE);
-                    // reader.callWidget(LineReader.REDISPLAY);
-
-                    // reader.getTerminal().writer().flush();
-
-                    //reader.printAbove(String.join("  ",matches));
-
-                    return true;
-                }
+                //     reader.getTerminal().writer().print("\r\n");
+                //     reader.getTerminal().writer().println(String.join("  ",matches));
+                //     reader.getTerminal().writer().print("$ "+currentBuffer);
+                //     reader.getTerminal().writer().flush();
+                //     return true;
+                // }
             }
 
             return true;
