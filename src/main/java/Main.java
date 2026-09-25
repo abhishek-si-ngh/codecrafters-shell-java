@@ -206,7 +206,9 @@ public class Main
                 if(!prefix.equals(word))
                 {
                     String addition=prefix.substring(word.length());
-                    reader.putString(addition);
+                    reader.getBuffer().write(addition);
+                    reader.redrawLine();
+                    // reader.putString(addition);
                 }
                 return true;
                 //tabCount++;
