@@ -120,11 +120,9 @@ public class Main
 
         for(String match:matchString)
         {
-            while(!match.startsWith(prefix))
+            while(!match.startsWith(prefix) && !prefix.isEmpty())
             {
                 prefix=prefix.substring(0,prefix.length()-1);
-                if(prefix.equals(null))
-                    break;
             }
         }
         return prefix;
@@ -149,8 +147,8 @@ public class Main
     static class TabCompletionWidget implements Widget
     {
         private final LineReader reader;
-        private String lastBuffer="";
-        private int tabCount=0;
+        //private String lastBuffer="";
+        //private int tabCount=0;
 
         TabCompletionWidget(LineReader reader)
         {
@@ -172,11 +170,11 @@ public class Main
 
             String word=line.word();
 
-            if(!buffer.equals(lastBuffer))
-            {
-                lastBuffer=buffer;
-                tabCount=0;
-            }
+            // if(!buffer.equals(lastBuffer))
+            // {
+            //     lastBuffer=buffer;
+            //     tabCount=0;
+            // }
 
             Set<String> matches=findCompletionMatches(word);
 
@@ -186,7 +184,7 @@ public class Main
             if(matches.size()==0)
             {
                 reader.callWidget(LineReader.BEEP);
-                tabCount=0;
+                // tabCount=0;
                 return true;
             }
 
@@ -195,7 +193,7 @@ public class Main
             if(matches.size()==1)
             {
                 reader.callWidget(LineReader.COMPLETE_WORD);
-                tabCount=0;
+                // tabCount=0;
                 return true;
             }
 
