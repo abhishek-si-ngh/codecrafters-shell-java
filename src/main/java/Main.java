@@ -147,8 +147,8 @@ public class Main
     static class TabCompletionWidget implements Widget
     {
         private final LineReader reader;
-        //private String lastBuffer="";
-        //private int tabCount=0;
+        private String lastBuffer="";
+        private int tabCount=0;
 
         TabCompletionWidget(LineReader reader)
         {
@@ -158,7 +158,6 @@ public class Main
         @Override
         public boolean apply()
         {
-            //System.out.println("TAB WIDGET CALLED");
             String buffer=reader.getBuffer().toString();
             int cursor=reader.getBuffer().cursor();
 
@@ -170,11 +169,11 @@ public class Main
 
             String word=line.word();
 
-            // if(!buffer.equals(lastBuffer))
-            // {
-            //     lastBuffer=buffer;
-            //     tabCount=0;
-            // }
+            if(!buffer.equals(lastBuffer))
+            {
+                lastBuffer=buffer;
+                tabCount=0;
+            }
 
             Set<String> matches=findCompletionMatches(word);
 
@@ -203,37 +202,45 @@ public class Main
             if(matches.size()>1)
             {
                 String prefix=longestCommonPrefix(matches);
+
+                //LCP gives us more charachters
+
                 if(!prefix.equals(word))
                 {
                     String addition=prefix.substring(word.length());
                     reader.getBuffer().write(addition);
                     reader.callWidget(LineReader.REDRAW_LINE);
-                    // reader.putString(addition);
+
+                    tabCount=0;
+                    return true;
                 }
-                return true;
-                //tabCount++;
+
+                //LCP is same as what user already typed
+                //No further automatic completion possible
+
+                tabCount++;
     
                 // First TAB → return false.
                 // JLine will ring the bell automatically.
-                // if(tabCount==1)
-                // {
-                //     reader.callWidget(LineReader.BEEP);
-                //     return false;
-                // }
+                if(tabCount==1)
+                {
+                    reader.callWidget(LineReader.BEEP);
+                    return false;
+                }
     
                 // Second TAB → print matches above the prompt.
-                // if(tabCount==2)
-                // {
-                //     tabCount=0;
+                if(tabCount==2)
+                {
+                    tabCount=0;
 
-                //     String currentBuffer=reader.getBuffer().toString();
+                    String currentBuffer=reader.getBuffer().toString();
 
-                //     reader.getTerminal().writer().print("\r\n");
-                //     reader.getTerminal().writer().println(String.join("  ",matches));
-                //     reader.getTerminal().writer().print("$ "+currentBuffer);
-                //     reader.getTerminal().writer().flush();
-                //     return true;
-                // }
+                    reader.getTerminal().writer().print("\r\n");
+                    reader.getTerminal().writer().println(String.join("  ",matches));
+                    reader.getTerminal().writer().print("$ "+currentBuffer);
+                    reader.getTerminal().writer().flush();
+                    return true;
+                }
             }
 
             return true;
