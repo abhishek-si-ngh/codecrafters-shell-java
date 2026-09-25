@@ -207,7 +207,7 @@ public class Main
                 {
                     String addition=prefix.substring(word.length());
                     reader.getBuffer().write(addition);
-                    reader.callWidget(LineReader.REDRAW_LINE());
+                    reader.callWidget(LineReader.REDRAW_LINE);
                     // reader.putString(addition);
                 }
                 return true;
