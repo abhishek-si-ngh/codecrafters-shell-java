@@ -203,14 +203,16 @@ public class Main
                     //reader.printAbove(String.join("  ",matches));
                     tabCount=0;
 
-                    reader.callWidget(LineReader.CLEAR);
+                    // reader.callWidget(LineReader.CLEAR);
 
-                    reader.getTerminal().writer().println(String.join(" ",matches));
-                    //reader.callWidget(LineReader.LIST_CHOICES);
-                    reader.callWidget(LineReader.REDRAW_LINE);
-                    reader.callWidget(LineReader.REDISPLAY);
+                    // reader.getTerminal().writer().println(String.join(" ",matches));
+                    // //reader.callWidget(LineReader.LIST_CHOICES);
+                    // reader.callWidget(LineReader.REDRAW_LINE);
+                    // reader.callWidget(LineReader.REDISPLAY);
 
-                    reader.getTerminal().writer().flush();
+                    // reader.getTerminal().writer().flush();
+
+                    reader.printAbove(String.join("  ",matches));
 
                     return true;
                 }
