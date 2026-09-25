@@ -203,6 +203,13 @@ public class Main
                     //reader.printAbove(String.join("  ",matches));
                     tabCount=0;
 
+                    String currentBuffer=reader.getBuffer().toString();
+
+                    reader.getTerminal().writer().print("\r\n");
+                    reader.getTerminal().writer().println(String.join("  ",matches));
+                    reader.getTerminal().writer().print("$ "+currentBuffer);
+                    reader.getTerminal().writer().flush();
+
                     // reader.callWidget(LineReader.CLEAR);
 
                     // reader.getTerminal().writer().println(String.join(" ",matches));
@@ -212,7 +219,7 @@ public class Main
 
                     // reader.getTerminal().writer().flush();
 
-                    reader.printAbove(String.join("  ",matches));
+                    //reader.printAbove(String.join("  ",matches));
 
                     return true;
                 }
