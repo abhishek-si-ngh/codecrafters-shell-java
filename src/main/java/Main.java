@@ -69,6 +69,7 @@ public class Main
         terminal.close();
     }
 
+    //Command Completion
     public static Set<String> findCompletionMatches(String word)
     {
         Set<String> matches=new TreeSet<>();
@@ -135,7 +136,12 @@ public class Main
         {
             String word=line.word();
 
-            Set<String> matches=findCompletionMatches(word);
+            Set<String> matches;
+
+            if(line.wordIndex()>0)
+                matches=findFilenameMatches(word);
+            else
+                matches=findCompletionMatches(word);
 
             for(String name:matches)
             {
@@ -175,7 +181,13 @@ public class Main
                 tabCount=0;
             }
 
-            Set<String> matches=findCompletionMatches(word);
+            Set<String> matches;
+
+            if(line.wordIndex()>0)
+                matches=findFilenameMatches(word);
+            else
+                matches=findCompletionMatches(word);
+
 
             // No matches:
             // Let JLine perform normal completion.
@@ -245,6 +257,67 @@ public class Main
 
             return true;
         }
+    }
+
+    //File name Completion
+    public static Set<String> findFilenameMatches(String word)
+    {
+        Set<String> matches=new TreeSet<>();
+
+        if(word.isEmpty())
+            return matches;
+
+
+        File directory=new File(".");
+        File files[]=directory.listFiles();
+
+        if(files==null)
+            return matches;
+
+        for(File file:files)
+        {
+            String name=file.getName();
+            if(file.isFile() && name.startsWith(word))
+            {
+                matches.add(name);
+            }
+
+        }
+        //Builtins
+
+        // if("echo".startsWith(word))
+        //     matches.add("echo");
+        // if("exit".startsWith(word))
+        //     matches.add("exit");
+
+        //External executables
+
+        // String path=System.getenv("PATH");
+
+        // if(path!=null)
+        // {
+        //     String directories[]=path.split(File.pathSeparator);
+
+        //     for(String dir:directories)
+        //     {
+        //         File directory=new File(".");
+        //         File files[]=directory.listFiles();
+
+        //         if(files==null)
+        //             continue;
+
+        //         for(File file:files)
+        //         {
+        //             String name=file.getName();
+
+        //             if(file.isFile() && file.canExecute() && name.startsWith(word))
+        //             {
+        //                 matches.add(name);
+        //             }
+        //         }
+        //     }
+        // }
+        return matches;
     }
 
     static class Redirection
