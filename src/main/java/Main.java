@@ -265,8 +265,8 @@ public class Main
     {
         Set<String> matches=new TreeSet<>();
 
-        if(word.isEmpty())
-            return matches;
+        // if(word.isEmpty())
+        //     return matches;
 
         String directoryPath=".";
         String prefix=word;
