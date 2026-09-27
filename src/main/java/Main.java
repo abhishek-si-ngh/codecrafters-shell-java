@@ -267,56 +267,85 @@ public class Main
         if(word.isEmpty())
             return matches;
 
+        String directoryPath=".";
+        String prefix=word;
+        int lastSlash=word.lastIndexOf('/');
 
-        File directory=new File(".");
+        if(lastSlash!=-1)
+        {
+            directoryPath=word.substring(0, lastSlash+1);
+            prefix=word.substring(lastSlash+1);
+        }
+        File directory=new File(directoryPath);
         File files[]=directory.listFiles();
-
+        
         if(files==null)
             return matches;
-
+        
         for(File file:files)
         {
             String name=file.getName();
-            if(file.isFile() && name.startsWith(word))
+            if(file.isFile() && name.startsWith(prefix))
             {
-                matches.add(name);
+                if(lastSlash!=-1)
+                    matches.add(directoryPath+name);
+                else
+                    matches.add(name);
             }
-
         }
-        //Builtins
-
-        // if("echo".startsWith(word))
-        //     matches.add("echo");
-        // if("exit".startsWith(word))
-        //     matches.add("exit");
-
-        //External executables
-
-        // String path=System.getenv("PATH");
-
-        // if(path!=null)
+                //Builtins
+                
+                // if("echo".startsWith(word))
+                //     matches.add("echo");
+                // if("exit".startsWith(word))
+                //     matches.add("exit");
+                
+                //External executables
+                
+                // String path=System.getenv("PATH");
+                
+                // if(path!=null)
+                // {
+                //     String directories[]=path.split(File.pathSeparator);
+                
+                //     for(String dir:directories)
+                //     {
+                //         File directory=new File(".");
+                //         File files[]=directory.listFiles();
+                
+                //         if(files==null)
+                //             continue;
+                
+                //         for(File file:files)
+                //         {
+                //             String name=file.getName();
+                
+                //             if(file.isFile() && file.canExecute() && name.startsWith(word))
+                //             {
+                //                 matches.add(name);
+                //             }
+                //         }
+                //     }
+                // }
+        // int lastSlash=word.lastIndexOf('\\');
+        // String directoryPath=word.substring(0, lastSlash);
+        // String prefix=word.substring(lastSlash+1);
+        
+        // File directory=new File(directoryPath);
+        // File files[]=directory.listFiles();
+        
+        // if(files==null)
+        //     return matches;
+        
+        // for(File file:files)
         // {
-        //     String directories[]=path.split(File.pathSeparator);
-
-        //     for(String dir:directories)
+        //     String name=file.getName();
+        //     if(file.isFile() && name.startsWith(prefix))
         //     {
-        //         File directory=new File(".");
-        //         File files[]=directory.listFiles();
-
-        //         if(files==null)
-        //             continue;
-
-        //         for(File file:files)
-        //         {
-        //             String name=file.getName();
-
-        //             if(file.isFile() && file.canExecute() && name.startsWith(word))
-        //             {
-        //                 matches.add(name);
-        //             }
-        //         }
+        //         matches.add(directoryPath+name);
         //     }
         // }
+        
         return matches;
     }
 
