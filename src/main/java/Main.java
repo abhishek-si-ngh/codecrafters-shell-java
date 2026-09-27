@@ -145,7 +145,8 @@ public class Main
 
             for(String name:matches)
             {
-                candidates.add(new Candidate(name,name,null,null," ",null,true));
+                String suffix=name.endsWith("/")?"":" ";
+                candidates.add(new Candidate(name,name,null,null,suffix,null,true));
             }
         }
     }
@@ -285,12 +286,23 @@ public class Main
         for(File file:files)
         {
             String name=file.getName();
-            if(file.isFile() && name.startsWith(prefix))
+
+            if(name.startsWith(prefix))
             {
-                if(lastSlash!=-1)
-                    matches.add(directoryPath+name);
-                else
-                    matches.add(name);
+                if(file.isDirectory())
+                {
+                    if(lastSlash!=-1)
+                        matches.add(directoryPath+name+"/");
+                    else
+                        matches.add(name+"/");
+                }
+                else if(file.isFile())
+                {
+                    if(lastSlash!=-1)
+                        matches.add(directoryPath+name);
+                    else
+                        matches.add(name);
+                }
             }
         }
                 //Builtins
