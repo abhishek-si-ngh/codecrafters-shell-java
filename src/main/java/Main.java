@@ -192,11 +192,19 @@ public class Main
 
                 if(script!=null)
                 {
-                    String candidate=runCompleterScript(script);
-    
-                    reader.getBuffer().write(candidate+" ");
-                    reader.callWidget(LineReader.REDRAW_LINE);
-                    return true;
+                    try
+                    {
+                        String candidate=runCompleterScript(script);
+        
+                        reader.getBuffer().write(candidate+" ");
+                        reader.callWidget(LineReader.REDRAW_LINE);
+                        return true;
+                    }
+                    catch(Exception e)
+                    {
+                        reader.callWidget(LineReader.BEEP);
+                        return true;
+                    }
                 }
             }
             
