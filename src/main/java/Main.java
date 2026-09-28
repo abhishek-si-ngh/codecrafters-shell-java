@@ -595,7 +595,7 @@ public class Main
             String path=completionMap.get(commandName);
             if(path!=null)
             {
-                System.out.prinln("complete -C \'"+path+"\' "+commandName);
+                System.out.println("complete -C \'"+path+"\' "+commandName);
             }
             else
                 System.out.println("complete: "+commandName+": no completion specification");
