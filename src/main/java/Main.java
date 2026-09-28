@@ -119,6 +119,8 @@ public class Main
         return matches;
     }
 
+
+
     //Longest Matching Prefix finding method
     public static String longestCommonPrefix(Set<String> matches)
     {
@@ -134,6 +136,8 @@ public class Main
         }
         return prefix;
     }
+
+
 
     static class BuiltinCompleter implements Completer
     {
@@ -181,21 +185,36 @@ public class Main
             );
 
             String word=line.word();
+            if(line.wordIndex()>0 && !line.words().isEmpty())
+            {
+                String commandName=line.words().get(0);
+                String script=completionMap.get(commandName);
 
+                if(script!=null)
+                {
+                    String candidate=runCompleterScript(script);
+    
+                    reader.getBuffer().write(candidate+" ");
+                    reader.callWidget(LineReader.REDRAW_LINE);
+                    return true;
+                }
+            }
+            
             if(!buffer.equals(lastBuffer))
             {
-                lastBuffer=buffer;
-                tabCount=0;
+                    lastBuffer=buffer;
+                    tabCount=0;
             }
-
+                
+                
             Set<String> matches;
-
+                
             if(line.wordIndex()>0)
                 matches=findFilenameMatches(word);
             else
                 matches=findCompletionMatches(word);
-
-
+                
+                
             // No matches:
             // Let JLine perform normal completion.
             // It will ring the bell because there are no candidates.
@@ -205,7 +224,7 @@ public class Main
                 // tabCount=0;
                 return true;
             }
-
+                
             // Exactly one match:
             // Let JLine perform normal completion.
             if(matches.size()==1)
@@ -214,54 +233,66 @@ public class Main
                 // tabCount=0;
                 return true;
             }
-
-
+                
+                
             // Multiple matches
-
+                
             if(matches.size()>1)
             {
-                // if(line.wordIndex()==0)
-                // {
-                // }
                 String prefix=longestCommonPrefix(matches);
-
+                
                 //LCP gives us more charachters
-
+                
                 if(!prefix.equals(word))
                 {
                     String addition=prefix.substring(word.length());
                     reader.getBuffer().write(addition);
                     reader.callWidget(LineReader.REDRAW_LINE);
-
+                
                     tabCount=0;
                     return true;
                 }
-
-                tabCount++;
                 
+                tabCount++;
+                                
                 if(tabCount==1)
                 {
                     reader.callWidget(LineReader.BEEP);
                     return false;
                 }
-
+                
                 if(tabCount>=2)
                 {
                     String currentBuffer=reader.getBuffer().toString();
-
+                
                     reader.getTerminal().writer().print("\r\n");
                     reader.getTerminal().writer().println(String.join(" ",matches));
                     reader.getTerminal().writer().print("$ "+currentBuffer);
                     reader.getTerminal().writer().flush();
-
+                
                     return true;
                 }
-
+                
             }
-
             return true;
         }
     }
+
+
+
+    //Script Running method
+    public static String runCompleterScript(String script)throws Exception
+    {
+        ProcessBuilder pb=new ProcessBuilder(script);
+        Process process=pb.start();
+
+        BufferedReader br=new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String candidate=br.readLine();
+        process.waitFor();
+
+        return candidate;
+    }
+
 
     //File name Completion
     public static Set<String> findFilenameMatches(String word)
@@ -363,6 +394,8 @@ public class Main
         
         return matches;
     }
+
+
 
     static class Redirection
     {
