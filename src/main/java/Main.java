@@ -61,6 +61,10 @@ public class Main
             {
                 executeType(commandParts);
             }
+            else if(commandName.equals("complete"))
+            {
+                executeComplete(commandParts);
+            }
             else
             {
                 executeExternalCommand(commandParts,redirection);
@@ -114,6 +118,7 @@ public class Main
         return matches;
     }
 
+    //Longest Matching Prefix finding method
     public static String longestCommonPrefix(Set<String> matches)
     {
         String matchString[]=matches.toArray(new String[0]);
@@ -573,6 +578,16 @@ public class Main
         }
     }
 
+    //Method to Execute Complete command
+    
+    public static void executeComplete(String commandParts[])
+    {
+        if(commandParts.length>=3 && commandParts[1].equals("-p"))
+        {
+            String commanName=commandParts[2];
+            System.out.println("complete: "+ commanName+": no completion specification");
+        }
+    }
 
     //Method to find executable command in path
 
