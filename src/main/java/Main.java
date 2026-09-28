@@ -559,6 +559,8 @@ public class Main
             System.out.println(target+" is a shell builtin");
         else if(target.equals("type"))
             System.out.println(target+" is a shell builtin");
+        else if(target.equals("complete"))
+            System.out.println(target+" is a shell builtin");
         else
         {
             Path result=findExecutable(target);
