@@ -18,6 +18,7 @@ import org.jline.keymap.KeyMap;
 
 public class Main 
 {
+    static Map<String,String> completionMap=new HashMap<>();
     public static void main(String[] args) throws Exception 
     {
 
@@ -579,13 +580,25 @@ public class Main
     }
 
     //Method to Execute Complete command
-    
+
     public static void executeComplete(String commandParts[])
     {
-        if(commandParts.length>=3 && commandParts[1].equals("-p"))
+        if(commandParts.length>=4 && commandParts[1].equals("-C"))
         {
-            String commanName=commandParts[2];
-            System.out.println("complete: "+ commanName+": no completion specification");
+            String path=commandParts[2];
+            String commandName=commandParts[3];
+            completionMap.put(commandName, path);
+        }
+        else if(commandParts.length>=3 && commandParts[1].equals("-p"))
+        {
+            String commandName=commandParts[2];
+            String path=completionMap.get(commandName);
+            if(path!=null)
+            {
+                System.out.prinln("complete -C \'"+path+"\' "+commandName);
+            }
+            else
+                System.out.println("complete: "+commandName+": no completion specification");
         }
     }
 
