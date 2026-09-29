@@ -201,18 +201,52 @@ public class Main
                         if(line.wordIndex()>1)
                             previousWord=line.words().get(line.wordIndex()-1);
                         int compPoint=buffer.substring(0,cursor).getBytes(StandardCharsets.UTF_8).length;
-                        String candidate=runCompleterScript(script,commandName,word,previousWord,buffer,compPoint);
+                        Set<String> candidates=runCompleterScript(script,commandName,word,previousWord,buffer,compPoint);
 
-                        if(candidate==null || candidate.isEmpty())
+
+
+                        if(candidates.size()==0)
                         {
                             reader.callWidget(LineReader.BEEP);
                             return true;
                         }
 
-                        reader.getBuffer().backspace(word.length());
-                        reader.getBuffer().write(candidate+" ");
-                        reader.callWidget(LineReader.REDRAW_LINE);
-                        return true;
+                        if(candidates.size()==1)
+                        {
+                            String candidate=candidates.iterator().next();
+
+                            reader.getBuffer().backspace(word.length());
+                            reader.getBuffer().write(candidate+" ");
+                            reader.callWidget(LineReader.REDRAW_LINE);
+
+                            tabCount=0;
+                            return true;
+                        }
+
+                        tabCount++;
+
+                        if(tabCount==1)
+                        {
+                            reader.callWidget(LineReader.BEEP);
+                            return false;
+                        }
+
+                        if(tabCount>=2)
+                        {
+                            String currentBuffer=reader.getBuffer().toString();
+
+                            reader.getTerminal().writer().print("\r\n");
+                            reader.getTerminal().writer().println(String.join(" ",candidates));
+                            reader.getTerminal().writer().print("$ "+currentBuffer);
+                            reader.getTerminal().writer().flush();
+
+                            return true;
+                        }
+
+                        // reader.getBuffer().backspace(word.length());
+                        // reader.getBuffer().write(candidate+" ");
+                        // reader.callWidget(LineReader.REDRAW_LINE);
+                        // return true;
                     }
                     catch(Exception e)
                     {
@@ -303,7 +337,7 @@ public class Main
 
 
     //Script Running method
-    public static String runCompleterScript(String script,String commandName,String word,String previousWord,String compLine,int compPoint)throws Exception
+    public static Set<String> runCompleterScript(String script,String commandName,String word,String previousWord,String compLine,int compPoint)throws Exception
     {
         ProcessBuilder pb=new ProcessBuilder(script,commandName,word,previousWord);
         pb.environment().put("COMP_LINE", compLine);
@@ -312,10 +346,19 @@ public class Main
         Process process=pb.start();
 
         BufferedReader br=new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String candidate=br.readLine();
+
+        Set<String> candidates=new TreeSet<>();
+
+        String candidate;
+
+        while((candidate=br.readLine())!=null)
+        {
+            if(!candidate.isEmpty())
+                candidates.add(candidate);
+        }
         process.waitFor();
 
-        return candidate;
+        return candidates;
     }
 
 
