@@ -238,7 +238,7 @@ public class Main
                                 return true;
                             }
 
-                            
+
                             tabCount++;
     
                             if(tabCount==1)
@@ -719,6 +719,11 @@ public class Main
             }
             else
                 System.out.println("complete: "+commandName+": no completion specification");
+        }
+        else if(commandParts.length>=3 && commandParts[1].equals("-r"))
+        {
+            String commandName=commandParts[2];
+            completionMap.remove(commandName);
         }
     }
 
