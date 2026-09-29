@@ -201,7 +201,7 @@ public class Main
                         if(line.wordIndex()>1)
                             previousWord=line.words().get(line.wordIndex()-1);
                         int compPoint=buffer.substring(0,cursor).getBytes(StandardCharsets.UTF_8).length;
-                        String candidate=runCompleterScript(script,commandName,word,previousWord,,buffer,compPoint);
+                        String candidate=runCompleterScript(script,commandName,word,previousWord,buffer,compPoint);
 
                         if(candidate==null || candidate.isEmpty())
                         {
