@@ -206,7 +206,8 @@ public class Main
                             reader.callWidget(LineReader.BEEP);
                             return true;
                         }
-        
+
+                        reader.getBuffer().backspace(word.length());
                         reader.getBuffer().write(candidate+" ");
                         reader.callWidget(LineReader.REDRAW_LINE);
                         return true;
