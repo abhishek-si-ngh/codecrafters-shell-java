@@ -189,12 +189,17 @@ public class Main
             {
                 String commandName=line.words().get(0);
                 String script=completionMap.get(commandName);
-
+                
+                
+                
                 if(script!=null)
                 {
                     try
                     {
-                        String candidate=runCompleterScript(script);
+                        String previousWord="";
+                        if(line.wordIndex()>1)
+                            previousWord=line.words().get(line.wordIndex()-1);
+                        String candidate=runCompleterScript(script,commandName,word,previousWord);
 
                         if(candidate==null || candidate.isEmpty())
                         {
@@ -295,9 +300,9 @@ public class Main
 
 
     //Script Running method
-    public static String runCompleterScript(String script)throws Exception
+    public static String runCompleterScript(String script,String commandName,String word,String previousWord)throws Exception
     {
-        ProcessBuilder pb=new ProcessBuilder(script);
+        ProcessBuilder pb=new ProcessBuilder(script,commandName,word,previousWord);
         Process process=pb.start();
 
         BufferedReader br=new BufferedReader(new InputStreamReader(process.getInputStream()));
