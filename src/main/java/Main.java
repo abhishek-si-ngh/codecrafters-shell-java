@@ -13,6 +13,7 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.reader.Widget;
 import org.jline.keymap.KeyMap;
+import java.nio.charset.StandardCharsets;
 
 
 
@@ -199,7 +200,8 @@ public class Main
                         String previousWord="";
                         if(line.wordIndex()>1)
                             previousWord=line.words().get(line.wordIndex()-1);
-                        String candidate=runCompleterScript(script,commandName,word,previousWord);
+                        int compPoint=buffer.substring(0,cursor).getBytes(StandardCharsets.UTF_8).length;
+                        String candidate=runCompleterScript(script,commandName,word,previousWord,,buffer,compPoint);
 
                         if(candidate==null || candidate.isEmpty())
                         {
@@ -301,9 +303,12 @@ public class Main
 
 
     //Script Running method
-    public static String runCompleterScript(String script,String commandName,String word,String previousWord)throws Exception
+    public static String runCompleterScript(String script,String commandName,String word,String previousWord,String compLine,int compPoint)throws Exception
     {
         ProcessBuilder pb=new ProcessBuilder(script,commandName,word,previousWord);
+        pb.environment().put("COMP_LINE", compLine);
+        pb.environment().put("COMP_POINT", String.valueOf(compPoint));
+
         Process process=pb.start();
 
         BufferedReader br=new BufferedReader(new InputStreamReader(process.getInputStream()));
