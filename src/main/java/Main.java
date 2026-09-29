@@ -198,7 +198,7 @@ public class Main
                     try
                     {
                         String previousWord="";
-                        if(line.wordIndex()>1)
+                        if(line.wordIndex()>0)
                             previousWord=line.words().get(line.wordIndex()-1);
                         int compPoint=buffer.substring(0,cursor).getBytes(StandardCharsets.UTF_8).length;
                         Set<String> candidates=runCompleterScript(script,commandName,word,previousWord,buffer,compPoint);
@@ -236,7 +236,7 @@ public class Main
                             String currentBuffer=reader.getBuffer().toString();
 
                             reader.getTerminal().writer().print("\r\n");
-                            reader.getTerminal().writer().println(String.join(" ",candidates));
+                            reader.getTerminal().writer().println(String.join("  ",candidates));
                             reader.getTerminal().writer().print("$ "+currentBuffer);
                             reader.getTerminal().writer().flush();
 
