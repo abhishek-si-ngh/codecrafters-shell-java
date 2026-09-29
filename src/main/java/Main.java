@@ -195,6 +195,12 @@ public class Main
                     try
                     {
                         String candidate=runCompleterScript(script);
+
+                        if(candidate==null || candidate.isEmpty())
+                        {
+                            reader.callWidget(LineReader.BEEP);
+                            return true;
+                        }
         
                         reader.getBuffer().write(candidate+" ");
                         reader.callWidget(LineReader.REDRAW_LINE);
