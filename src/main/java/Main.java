@@ -223,25 +223,44 @@ public class Main
                             return true;
                         }
 
-                        tabCount++;
-
-                        if(tabCount==1)
+                        if(candidates.size()>1)
                         {
-                            reader.callWidget(LineReader.BEEP);
-                            return false;
+                            String prefix=longestCommonPrefix(candidates);
+
+                            if(prefix.length()>word.length() && prefix.startsWith(word))
+                            {
+                                String addition=prefix.substring(word.length());
+
+                                reader.getBuffer().write(addition);
+                                reader.callWidget(LineReader.REDRAW_LINE);
+
+                                tabCount=0;
+                                return true;
+                            }
+
+                            
+                            tabCount++;
+    
+                            if(tabCount==1)
+                            {
+                                reader.callWidget(LineReader.BEEP);
+                                return false;
+                            }
+    
+    
+                            if(tabCount>=2)
+                            {
+                                String currentBuffer=reader.getBuffer().toString();
+    
+                                reader.getTerminal().writer().print("\r\n");
+                                reader.getTerminal().writer().println(String.join("  ",candidates));
+                                reader.getTerminal().writer().print("$ "+currentBuffer);
+                                reader.getTerminal().writer().flush();
+    
+                                return true;
+                            }
                         }
 
-                        if(tabCount>=2)
-                        {
-                            String currentBuffer=reader.getBuffer().toString();
-
-                            reader.getTerminal().writer().print("\r\n");
-                            reader.getTerminal().writer().println(String.join("  ",candidates));
-                            reader.getTerminal().writer().print("$ "+currentBuffer);
-                            reader.getTerminal().writer().flush();
-
-                            return true;
-                        }
 
                         // reader.getBuffer().backspace(word.length());
                         // reader.getBuffer().write(candidate+" ");
