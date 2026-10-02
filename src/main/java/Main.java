@@ -20,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 public class Main 
 {
     static Map<String,String> completionMap=new HashMap<>();
+
+    static int nextJobNumber=1;
     public static void main(String[] args) throws Exception 
     {
 
@@ -40,6 +42,13 @@ public class Main
 
             //Parsing command
             String commandParts[]=parseCommand(command);
+
+            boolean background=false;
+            if(commandParts.length>0 && commandParts[commandParts.length-1].equals("&"))
+            {
+                background=true;
+                commandParts=Arrays.copyOf(commandParts,commandParts.length-1);
+            }
 
 
             Redirection redirection=handleRedirection(commandParts);
@@ -73,7 +82,7 @@ public class Main
             }
             else
             {
-                executeExternalCommand(commandParts,redirection);
+                executeExternalCommand(commandParts,redirection,background);
             }
         }
         terminal.close();
@@ -93,6 +102,8 @@ public class Main
             matches.add("echo");
         if("exit".startsWith(word))
             matches.add("exit");
+        if("jobs".startsWith(word))
+            matches.add("jobs");
 
         //External executables
 
@@ -759,7 +770,7 @@ public class Main
 
     //Method to execute external commands
 
-    public static void executeExternalCommand(String commandParts[],Redirection redirection) throws Exception
+    public static void executeExternalCommand(String commandParts[],Redirection redirection,boolean background) throws Exception
     {
         Path executable=findExecutable(commandParts[0]);
 
@@ -795,6 +806,13 @@ public class Main
                 pb.inheritIO();
 
             Process p=pb.start();
+
+            if(background)
+            {
+                System.out.println("["+nextJobNumber+"]"+p.pid());
+                nextJobNumber++;
+            }
+            else
             p.waitFor();
         }
         else
