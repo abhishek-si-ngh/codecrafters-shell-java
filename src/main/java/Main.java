@@ -809,7 +809,7 @@ public class Main
 
             if(background)
             {
-                System.out.println("["+nextJobNumber+"]"+p.pid());
+                System.out.println("["+nextJobNumber+"] "+p.pid());
                 nextJobNumber++;
             }
             else
