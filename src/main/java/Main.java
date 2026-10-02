@@ -67,6 +67,10 @@ public class Main
             {
                 executeComplete(commandParts);
             }
+            else if(commandName.equals("jobs"))
+            {
+                executeJobs();
+            }
             else
             {
                 executeExternalCommand(commandParts,redirection);
