@@ -780,7 +780,7 @@ public class Main
 
     public static void executeJobs()
     {
-        Iterator<Job> iterator=jobs.iterartor();
+        Iterator<Job> iterator=jobs.iterator();
 
         while(iterator.hasNext())
         {
