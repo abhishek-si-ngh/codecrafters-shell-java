@@ -778,7 +778,7 @@ public class Main
         return null;
     }
 
-    public static void executeJobs()
+    public static void executeJobs()throws InterupptedException
     {
         Iterator<Job> iterator=jobs.iterator();
 
