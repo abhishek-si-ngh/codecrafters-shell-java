@@ -780,8 +780,15 @@ public class Main
 
     public static void executeJobs()
     {
-        for(Job job:jobs)
+        for(int i=0;i<jobs.size();i++)
         {
+            Job job=jobs.get(i);
+            String marker=" ";
+
+            if(i==jobs.size()-1)
+                marker="+";
+            else if(i==jobs.size()-2)
+                marker="-";
             System.out.printf("[%d]+ %-24s%s%n",job.jobNumber,job.status,job.command);
         }
     }
