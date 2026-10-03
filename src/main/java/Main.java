@@ -789,7 +789,7 @@ public class Main
                 marker="+";
             else if(i==jobs.size()-2)
                 marker="-";
-            System.out.printf("[%d]+ %-24s%s%n",job.jobNumber,marker,job.status,job.command);
+            System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,job.status,job.command);
         }
     }
 
