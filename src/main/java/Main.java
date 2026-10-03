@@ -780,39 +780,62 @@ public class Main
 
     public static void executeJobs()throws InterruptedException
     {
-        Iterator<Job> iterator=jobs.iterator();
+        // Iterator<Job> iterator=jobs.iterator();
 
-        while(iterator.hasNext())
+        // while(iterator.hasNext())
+        // {
+        //     Job job=iterator.next();
+
+        //     if(job.process.isAlive())
+        //     {
+        //         System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Running",job.command);
+        //     }
+        //     else
+        //     {
+        //         job.process.waitFor();
+        //         String doneCommand=job.command;
+        //         if(doneCommand.endsWith("&"))
+        //         {
+        //             doneCommand=doneCommand.substring(0,doneCommand.length()-1).trim();
+        //         }
+        //         System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Done",doneCommand);
+        //         iterator.remove();
+        //     }
+        // }
+        for(int i=0;i<jobs.size();i++)
         {
-            Job job=iterator.next();
-
+            Job job=jobs.get(i);
+        
             if(job.process.isAlive())
             {
-                System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Running",job.command);
+                String marker=" ";
+
+                if(i==jobs.size()-1)
+                    marker="+";
+                else if(i==jobs.size()-2)
+                    marker="-";
+            
+                System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,"Running",job.command);
+
             }
             else
             {
                 job.process.waitFor();
+
                 String doneCommand=job.command;
+
                 if(doneCommand.endsWith("&"))
                 {
                     doneCommand=doneCommand.substring(0,doneCommand.length()-1).trim();
                 }
-                System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Done",doneCommand);
-                iterator.remove();
-            }
-        }
-        // for(int i=0;i<jobs.size();i++)
-        // {
-        //     Job job=jobs.get(i);
-        //     String marker=" ";
 
-        //     if(i==jobs.size()-1)
-        //         marker="+";
-        //     else if(i==jobs.size()-2)
-        //         marker="-";
-        //     System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,job.status,job.command);
-        // }
+                System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Done",doneCommand);
+
+                jobs.remove(i);
+                i--;
+            }
+
+        }
     }
 
     //Method to execute external commands
