@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 public class Main 
 {
     static Map<String,String> completionMap=new HashMap<>();
-
+    static List<Job> jobs=new ArrayList<>();
     static int nextJobNumber=1;
     public static void main(String[] args) throws Exception 
     {
@@ -82,7 +82,7 @@ public class Main
             }
             else
             {
-                executeExternalCommand(commandParts,redirection,background);
+                executeExternalCommand(commandParts,redirection,background,command);
             }
         }
         terminal.close();
@@ -368,6 +368,21 @@ public class Main
         }
     }
 
+    static class Job
+    {
+        int jobNumber;
+        long pid;
+        String command;
+        String status;
+
+        Job(int jobNumber,long pid,String command,String status)
+        {
+            this.jobNumber=jobNumber;
+            this.pid=pid;
+            this.command=command;
+            this.status=status;
+        }
+    }
 
 
     //Script Running method
@@ -765,12 +780,15 @@ public class Main
 
     public static void executeJobs()
     {
-        
+        for(Job job:jobs)
+        {
+            System.out.printf("[%d]+ %-24s%s%n",job.jobNumber,job.status,job.command);
+        }
     }
 
     //Method to execute external commands
 
-    public static void executeExternalCommand(String commandParts[],Redirection redirection,boolean background) throws Exception
+    public static void executeExternalCommand(String commandParts[],Redirection redirection,boolean background,String command) throws Exception
     {
         Path executable=findExecutable(commandParts[0]);
 
@@ -810,6 +828,7 @@ public class Main
             if(background)
             {
                 System.out.println("["+nextJobNumber+"] "+p.pid());
+                jobs.add(new Job(nextJobNumber,p.pid(),command,"Running"));
                 nextJobNumber++;
             }
             else
