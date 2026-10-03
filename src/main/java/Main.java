@@ -793,7 +793,12 @@ public class Main
             else
             {
                 job.process.waitFor();
-                System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Done",job.command);
+                String doneCommand=job.command;
+                if(doneCommand.endsWith("&"))
+                {
+                    doneCommand=doneCommand.substring(0,doneCommand.length()-1).trim();
+                }
+                System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Done",job.doneCommand);
                 iterator.remove();
             }
         }
