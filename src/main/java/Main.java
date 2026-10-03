@@ -798,7 +798,7 @@ public class Main
                 {
                     doneCommand=doneCommand.substring(0,doneCommand.length()-1).trim();
                 }
-                System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Done",job.doneCommand);
+                System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Done",doneCommand);
                 iterator.remove();
             }
         }
