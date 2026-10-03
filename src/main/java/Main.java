@@ -371,14 +371,14 @@ public class Main
     static class Job
     {
         int jobNumber;
-        long pid;
+        Process process;
         String command;
         String status;
 
-        Job(int jobNumber,long pid,String command,String status)
+        Job(int jobNumber,Process process,String command,String status)
         {
             this.jobNumber=jobNumber;
-            this.pid=pid;
+            this.process=process;
             this.command=command;
             this.status=status;
         }
@@ -780,17 +780,34 @@ public class Main
 
     public static void executeJobs()
     {
-        for(int i=0;i<jobs.size();i++)
-        {
-            Job job=jobs.get(i);
-            String marker=" ";
+        Iterator<Job> iterator=jobs.iterartor();
 
-            if(i==jobs.size()-1)
-                marker="+";
-            else if(i==jobs.size()-2)
-                marker="-";
-            System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,job.status,job.command);
+        while(iterator.hasNext())
+        {
+            Job job=iterator.next();
+
+            if(job.process.isAlive())
+            {
+                System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Running",job.command);
+            }
+            else
+            {
+                job.process.waitFor();
+                System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Done",job.command);
+                iterator.remove();
+            }
         }
+        // for(int i=0;i<jobs.size();i++)
+        // {
+        //     Job job=jobs.get(i);
+        //     String marker=" ";
+
+        //     if(i==jobs.size()-1)
+        //         marker="+";
+        //     else if(i==jobs.size()-2)
+        //         marker="-";
+        //     System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,job.status,job.command);
+        // }
     }
 
     //Method to execute external commands
@@ -835,7 +852,7 @@ public class Main
             if(background)
             {
                 System.out.println("["+nextJobNumber+"] "+p.pid());
-                jobs.add(new Job(nextJobNumber,p.pid(),command,"Running"));
+                jobs.add(new Job(nextJobNumber,p,command,"Running"));
                 nextJobNumber++;
             }
             else
