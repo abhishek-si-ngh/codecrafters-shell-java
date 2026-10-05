@@ -877,7 +877,7 @@ public class Main
         if(jobs.isEmpty())
         return 1;
 
-        int maxJobnumber=0;
+        int maxJobNumber=0;
 
         for(Job job:jobs)
         {
