@@ -21,6 +21,7 @@ public class Main
 {
     static Map<String,String> completionMap=new HashMap<>();
     static List<Job> jobs=new ArrayList<>();
+    static List<Job> completedJobs=new ArrayList<>();
     static int nextJobNumber=1;
     public static void main(String[] args) throws Exception 
     {
@@ -831,11 +832,12 @@ public class Main
 
                 System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Done",doneCommand);
 
-                jobs.remove(i);
-                i--;
+                completedJobs.add(job);
+
             }
 
         }
+        jobs.removeAll(completedJobs);
     }
 
     //Method to execute external commands
