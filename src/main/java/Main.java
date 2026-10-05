@@ -803,6 +803,8 @@ public class Main
         //         iterator.remove();
         //     }
         // }
+
+        reapCompletedJobs();
         for(int i=0;i<jobs.size();i++)
         {
             Job job=jobs.get(i);
@@ -813,28 +815,39 @@ public class Main
                 marker="+";
             else if(i==jobs.size()-2)
                 marker="-";
+            System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,"Running",job.command);
 
-            if(job.process.isAlive())
-            {
-                System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,"Running",job.command);
-            }
-            else
+        }
+    }
+
+    public static void reapCompletedJobs()throws InterruptedException
+    {
+        List<Jobs> completedJobs=new ArrayList<>();
+
+        for(int i=0;i<jobs.size();i++)
+        {
+            Jobs job=jobs.get(i);
+            if(!job.process.isAlive())
             {
                 job.process.waitFor();
 
-                String doneCommand=job.command;
+                String marker=" ";
+
+                if(i==jobs.size()-1)
+                    marker="+";
+                else if(i==jobs.size()-2)
+                    marker="-";
+
+                Strin doneCommand=job.command;
 
                 if(doneCommand.endsWith("&"))
                 {
                     doneCommand=doneCommand.substring(0,doneCommand.length()-1).trim();
                 }
 
-                System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,"Done",doneCommand);
-
+                System.out.printf("[%d]%s %-24s%s%n",job.jobNumber,marker,"Done",doneCommand);
                 completedJobs.add(job);
-
             }
-
         }
         jobs.removeAll(completedJobs);
     }
