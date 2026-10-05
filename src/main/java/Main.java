@@ -804,9 +804,9 @@ public class Main
         //     }
         // }
 
+        List<Job> completedJobs=new ArrayList<>();
         for(int i=0;i<jobs.size();i++)
         {
-            List<Job> completedJobs=new ArrayList<>();
             Job job=jobs.get(i);
 
             String marker=" ";
