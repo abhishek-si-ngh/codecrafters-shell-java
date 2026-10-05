@@ -837,7 +837,7 @@ public class Main
                 else if(i==jobs.size()-2)
                     marker="-";
 
-                Strin doneCommand=job.command;
+                String doneCommand=job.command;
 
                 if(doneCommand.endsWith("&"))
                 {
