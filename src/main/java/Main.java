@@ -838,6 +838,7 @@ public class Main
         jobs.removeAll(completedJobs);
     }
 
+    //Method to reap completed jobs
     public static void reapCompletedJobs()throws InterruptedException
     {
         List<Job> completedJobs=new ArrayList<>();
@@ -868,6 +869,24 @@ public class Main
             }
         }
         jobs.removeAll(completedJobs);
+    }
+
+    //MAthod to calculate next job number
+    public static int getNextJobNumber()
+    {
+        if(jobs.isEmpty())
+        return 1;
+
+        int maxJobnumber=0;
+
+        for(Job job:jobs)
+        {
+            if(job.jobNumber>maxJobNumber)
+            {
+                maxJobNumber=job.jobNumber;
+            }
+        }
+        return maxJobNumber+1;
     }
 
     //Method to execute external commands
@@ -911,9 +930,9 @@ public class Main
 
             if(background)
             {
-                System.out.println("["+nextJobNumber+"] "+p.pid());
-                jobs.add(new Job(nextJobNumber,p,command,"Running"));
-                nextJobNumber++;
+                int jobNumber=getNextJobNumber();
+                System.out.println("["+jobNumber+"] "+p.pid());
+                jobs.add(new Job(jobNumber,p,command,"Running"));
             }
             else
             p.waitFor();
