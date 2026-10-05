@@ -37,6 +37,7 @@ public class Main
         
         while(true)
         {
+            reapCompltetedJobs();
             
             String command=reader.readLine("$ ");
 
@@ -821,11 +822,11 @@ public class Main
 
     public static void reapCompletedJobs()throws InterruptedException
     {
-        List<Jobs> completedJobs=new ArrayList<>();
+        List<Job> completedJobs=new ArrayList<>();
 
         for(int i=0;i<jobs.size();i++)
         {
-            Jobs job=jobs.get(i);
+            Job job=jobs.get(i);
             if(!job.process.isAlive())
             {
                 job.process.waitFor();
@@ -844,7 +845,7 @@ public class Main
                     doneCommand=doneCommand.substring(0,doneCommand.length()-1).trim();
                 }
 
-                System.out.printf("[%d]%s %-24s%s%n",job.jobNumber,marker,"Done",doneCommand);
+                System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,"Done",doneCommand);
                 completedJobs.add(job);
             }
         }
