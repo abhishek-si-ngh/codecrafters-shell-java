@@ -804,7 +804,6 @@ public class Main
         //     }
         // }
 
-        reapCompletedJobs();
         for(int i=0;i<jobs.size();i++)
         {
             Job job=jobs.get(i);
@@ -815,7 +814,14 @@ public class Main
                 marker="+";
             else if(i==jobs.size()-2)
                 marker="-";
-            System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,"Running",job.command);
+            if(job.process.isAlive())
+            {
+                System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,"Running",job.command);
+            }
+            else
+            {
+                reapCompletedJobs();
+            }
 
         }
     }
