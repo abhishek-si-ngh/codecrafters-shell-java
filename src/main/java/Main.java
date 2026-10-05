@@ -806,6 +806,7 @@ public class Main
 
         for(int i=0;i<jobs.size();i++)
         {
+            List<Job> completedJobs=new ArrayList<>();
             Job job=jobs.get(i);
 
             String marker=" ";
@@ -820,10 +821,21 @@ public class Main
             }
             else
             {
-                reapCompletedJobs();
+                job.process.waitFor();
+
+                String doneCommand=job.command;
+
+                if(doneCommand.endsWith("&"))
+                {
+                    doneCommand=doneCommand.substring(0,doneCommand.length()-1).trim();
+                }
+
+                System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,"Done",doneCommand);
+                completedJobs.add(job);
             }
 
         }
+        jobs.removeAll(completedJobs);
     }
 
     public static void reapCompletedJobs()throws InterruptedException
