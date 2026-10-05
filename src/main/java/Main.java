@@ -806,18 +806,17 @@ public class Main
         for(int i=0;i<jobs.size();i++)
         {
             Job job=jobs.get(i);
-        
+
+            String marker=" ";
+
+            if(i==jobs.size()-1)
+                marker="+";
+            else if(i==jobs.size()-2)
+                marker="-";
+
             if(job.process.isAlive())
             {
-                String marker=" ";
-
-                if(i==jobs.size()-1)
-                    marker="+";
-                else if(i==jobs.size()-2)
-                    marker="-";
-            
                 System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,"Running",job.command);
-
             }
             else
             {
@@ -830,7 +829,7 @@ public class Main
                     doneCommand=doneCommand.substring(0,doneCommand.length()-1).trim();
                 }
 
-                System.out.printf("[%d]+  %-24s%s%n",job.jobNumber,"Done",doneCommand);
+                System.out.printf("[%d]%s  %-24s%s%n",job.jobNumber,marker,"Done",doneCommand);
 
                 completedJobs.add(job);
 
