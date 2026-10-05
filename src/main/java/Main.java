@@ -21,7 +21,6 @@ public class Main
 {
     static Map<String,String> completionMap=new HashMap<>();
     static List<Job> jobs=new ArrayList<>();
-    static List<Job> completedJobs=new ArrayList<>();
     static int nextJobNumber=1;
     public static void main(String[] args) throws Exception 
     {
