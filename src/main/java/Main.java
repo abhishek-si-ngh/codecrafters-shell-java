@@ -37,7 +37,7 @@ public class Main
         
         while(true)
         {
-            reapCompltetedJobs();
+            reapCompletedJobs();
             
             String command=reader.readLine("$ ");
 
