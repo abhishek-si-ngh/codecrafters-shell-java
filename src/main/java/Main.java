@@ -991,12 +991,13 @@ public class Main
         String leftCommand=pipelineParts[0].trim();
         String rightCommand=pipelineParts[1].trim();
         
-        boolean leftBuiltin=isBuiltin(leftCommand);
-        boolean rightBuiltin=isBuiltin(rightCommand);
-
+        
         String leftParts[]=parseCommand(leftCommand);
         String rightParts[]=parseCommand(rightCommand);
-
+        
+        boolean leftBuiltin=isBuiltin(leftCommand);
+        boolean rightBuiltin=isBuiltin(rightCommand);
+        
         if(!leftBuiltin && !rightBuiltin)
         {
             Path leftExecutable=findExecutable(leftParts[0]);
