@@ -1119,7 +1119,7 @@ public class Main
 
             ProcessBuilder pb1=new ProcessBuilder(leftParts);
 
-            pb1.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+            pb1.redirectOutput(ProcessBuilder.Redirect.PIPE);
             pb1.redirectError(ProcessBuilder.Redirect.INHERIT);
 
             Process p1=pb1.start();
