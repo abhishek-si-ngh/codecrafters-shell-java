@@ -1127,7 +1127,7 @@ public class Main
             {
                 try
                 {
-                    p.getInputStream().transferTo(OutputStream.nullOutputStream());
+                    p1.getInputStream().transferTo(OutputStream.nullOutputStream());
                 }
                 catch(Exception ignored)
                 {}
@@ -1150,7 +1150,7 @@ public class Main
         {
             PrintStream output=new PrintStream(OutputStream.nullOutputStream(),true);
 
-            executeBuiltinforPipeline(leftParts,output);
+            executeBuiltinForPipeline(leftParts,output);
             output.close();
 
             executeBuiltinForPipeline(rightParts,System.out);
