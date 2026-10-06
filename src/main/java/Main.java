@@ -995,9 +995,9 @@ public class Main
         String leftParts[]=parseCommand(leftCommand);
         String rightParts[]=parseCommand(rightCommand);
         
-        boolean leftBuiltin=isBuiltin(leftCommand);
-        boolean rightBuiltin=isBuiltin(rightCommand);
-        
+        boolean leftBuiltin=isBuiltin(leftParts[0]);
+        boolean rightBuiltin=isBuiltin(rightParts[0]);
+
         if(!leftBuiltin && !rightBuiltin)
         {
             Path leftExecutable=findExecutable(leftParts[0]);
