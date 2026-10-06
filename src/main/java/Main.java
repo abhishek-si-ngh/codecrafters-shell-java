@@ -988,7 +988,16 @@ public class Main
         {
             try
             {
-                p1.getInputStream().transferTo(p2.getOutputStream());
+                InputStream input=p1.getInputStream();
+                OutputStream output=p2.getOutputStream();
+
+                byte buffer[]=new byte[8192];
+                int bytesRead;
+                while((bytesRead=input.read(buffer))!=-1)
+                {
+                    output.write(buffer,0,bytesRead);
+                    output.flush();
+                }
             }
             catch(IOException ignored)
             {}
