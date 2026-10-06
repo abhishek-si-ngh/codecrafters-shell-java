@@ -41,6 +41,12 @@ public class Main
             
             String command=reader.readLine("$ ");
 
+            if(command.contains("|"))
+            {
+                executePipeline(command);
+                continue;
+            }
+
             //Parsing command
             String commandParts[]=parseCommand(command);
 
@@ -939,5 +945,74 @@ public class Main
         }
         else
             System.out.println(commandParts[0]+": command not found");
+    }
+
+    public static void executePipeline(String command)throws Exception
+    {
+        String pipelineParts[]=command.split("\\|",2);
+
+        String leftCommand=pipelineParts[0].trim();
+        String rightCommand=pipelineParts[1].trim();
+
+        String leftParts[]=parseCommand(leftCommand);
+        String rightParts[]=parseCommand(rightCommand);
+
+        Path leftExecutable=findExecutable(leftParts[0]);
+        Path rightExecutable=findExecutable(rightParts[0]);
+
+        if(leftExecutable==null)
+        {
+            System.out.println(leftParts[0]+ ": command not found");
+            return;
+        }
+
+        if(rightExecutable==null)
+        {
+            System.out.println(rightParts[0]+": command not found");
+            return;
+        }
+
+        ProcessBuilder pb1=new ProcessBuilder(leftParts);
+        ProcessBuilder pb2=new ProcessBuilder(rightParts);
+
+        pb1.redirectInput(ProcessBuilder.Redirect.INHERIT);
+        pb1.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+        pb2.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+        pb2.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+        Process p1=pb1.start();
+        Process p2=pb2.start();
+
+        Thread pipeThread=new Thread(()->
+        {
+            try
+            {
+                p1.getInputStream().transferTo(p2.getOutputStream());
+            }
+            catch(IOException ignored)
+            {}
+            finally
+            {
+                try
+                {
+                    p2.getOutputStream().close();
+                }
+                catch(IOException ignored)
+                {}
+            }
+        });
+
+        pipeThread.start();
+
+        p2.waitFor();
+
+        if(p1.isAlive())
+        {
+            p1.destroyForcibly();
+        }
+
+        pipeThread.join();
+
     }
 }
