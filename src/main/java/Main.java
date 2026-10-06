@@ -96,7 +96,7 @@ public class Main
     }
 
     //Method to check if a command is a builin command
-    public static boolean isBuilin(String commandName)
+    public static boolean isBuiltin(String commandName)
     {
         return commandName.equals("echo")
         || commandName.equals("exit")
