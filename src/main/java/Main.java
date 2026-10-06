@@ -95,6 +95,43 @@ public class Main
         terminal.close();
     }
 
+    //Method to check if a command is a builin command
+    public static boolean isBuilin(String commandName)
+    {
+        return commandName.equals("echo")
+        || commandName.equals("exit")
+        || commandName.equals("type")
+        || commandName.equals("complete")
+        || commandName.equals("jobs");
+    }
+
+    //Method to execute builti commands for pipeine
+    public static void  executeBuiltinForPipeline(String commandParts[],PrintStream output)throws Exception
+    {
+        PrintStream originalOut=System.out;
+
+        try
+        {
+            System.setOut(output);
+
+            String commandName=commandParts[0];
+
+            if(commandName.equals("echo"))
+                executeEcho(commandParts,null);
+            else if(commandName.equals("type"))
+                executeType(commandParts);
+            else if(commandName.equals("complete"))
+                executeComplete(commandParts);
+            else if(commandName.equals("jobs"))
+                executeJobs();
+        }
+        finally
+        {
+            System.out.flush();
+            System.setOut(originalOut);
+        }
+    }
+
     //Command Completion
     public static Set<String> findCompletionMatches(String word)
     {
@@ -953,75 +990,175 @@ public class Main
 
         String leftCommand=pipelineParts[0].trim();
         String rightCommand=pipelineParts[1].trim();
+        
+        boolean leftBuiltin=isBuiltin(leftCommand);
+        boolean rightBuiltin=isBuiltin(rightCommand);
 
         String leftParts[]=parseCommand(leftCommand);
         String rightParts[]=parseCommand(rightCommand);
 
-        Path leftExecutable=findExecutable(leftParts[0]);
-        Path rightExecutable=findExecutable(rightParts[0]);
-
-        if(leftExecutable==null)
+        if(!leftBuiltin && !rightBuiltin)
         {
-            System.out.println(leftParts[0]+ ": command not found");
-            return;
-        }
+            Path leftExecutable=findExecutable(leftParts[0]);
+            Path rightExecutable=findExecutable(rightParts[0]);
 
-        if(rightExecutable==null)
-        {
-            System.out.println(rightParts[0]+": command not found");
-            return;
-        }
-
-        ProcessBuilder pb1=new ProcessBuilder(leftParts);
-        ProcessBuilder pb2=new ProcessBuilder(rightParts);
-
-        pb1.redirectInput(ProcessBuilder.Redirect.INHERIT);
-        pb1.redirectError(ProcessBuilder.Redirect.INHERIT);
-
-        pb2.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-        pb2.redirectError(ProcessBuilder.Redirect.INHERIT);
-
-        Process p1=pb1.start();
-        Process p2=pb2.start();
-
-        Thread pipeThread=new Thread(()->
-        {
-            try
+            if(leftExecutable==null)
             {
-                InputStream input=p1.getInputStream();
-                OutputStream output=p2.getOutputStream();
-
-                byte buffer[]=new byte[8192];
-                int bytesRead;
-                while((bytesRead=input.read(buffer))!=-1)
-                {
-                    output.write(buffer,0,bytesRead);
-                    output.flush();
-                }
+                System.out.println(leftParts[0]+ ": command not found");
+                return;
             }
-            catch(IOException ignored)
-            {}
-            finally
+
+            if(rightExecutable==null)
+            {
+                System.out.println(rightParts[0]+": command not found");
+                return;
+            }
+    
+            ProcessBuilder pb1=new ProcessBuilder(leftParts);
+            ProcessBuilder pb2=new ProcessBuilder(rightParts);
+
+            pb1.redirectInput(ProcessBuilder.Redirect.INHERIT);
+            pb1.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+            pb2.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+            pb2.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+            Process p1=pb1.start();
+            Process p2=pb2.start();
+
+            Thread pipeThread=new Thread(()->
             {
                 try
                 {
-                    p2.getOutputStream().close();
+                    InputStream input=p1.getInputStream();
+                    OutputStream output=p2.getOutputStream();
+
+                    byte buffer[]=new byte[8192];
+                    int bytesRead;
+                    while((bytesRead=input.read(buffer))!=-1)
+                    {
+                        output.write(buffer,0,bytesRead);
+                        output.flush();
+                    }
                 }
                 catch(IOException ignored)
                 {}
+                finally
+                {
+                    try
+                    {
+                        p2.getOutputStream().close();
+                    }
+                    catch(IOException ignored)
+                    {}
+                }
+            });
+
+            pipeThread.start();
+
+            p2.waitFor();
+
+            if(p1.isAlive())
+            {
+                p1.destroyForcibly();
             }
-        });
 
-        pipeThread.start();
+            pipeThread.join();
 
-        p2.waitFor();
-
-        if(p1.isAlive())
-        {
-            p1.destroyForcibly();
         }
 
-        pipeThread.join();
+        if(leftBuiltin && !rightBuiltin)
+        {
+            Path rightExecutable=findExecutable(rightParts[0]);
+
+            if(rightExecutable==null)
+            {
+                System.out.println(rightParts[0]+": command not found");
+                return;
+            }
+
+            ProcessBuilder pb2=new ProcessBuilder(rightParts);
+
+            pb2,redirectOutput(ProcessBuilder.Redirect.INHERIT);
+            pb2.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+            Process p2=pb2.start();
+
+            Thread builtinThread=new Thread(()->
+            {
+                try
+                {
+                    PrintStream output=new PrintStream(p2.getOutputStream(),true);
+                    executeBuiltinForPipeline(leftParts,output);
+                    output.close();
+                }
+                catch(Exception ignored)
+                {}
+            });
+
+            builtinThread.start();
+
+            p2.waitFor();
+
+            builtinThread.join();
+
+            return;
+        }
+
+
+        if(!leftBuiltin && rightBuiltin)
+        {
+            Path leftExecutable=findExecutable(leftParts[0]);
+
+            if(leftExecutable==null)
+            {
+                System.out.println(leftParts[0]+": command not found");
+                return;
+            }
+
+            ProcessBuilder pb1=new ProcessBuilder(leftParts);
+
+            pb1,redirectOutput(ProcessBuilder.Redirect.INHERIT);
+            pb1.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+            Process p1=pb1.start();
+
+            Thread drainThread=new Thread(()->
+            {
+                try
+                {
+                    p.getInputStream().transferTo(OutputStream.nullOutputStream());
+                }
+                catch(Exception ignored)
+                {}
+            });
+
+            drainThread.start();
+
+            PrintStream output=new PrintStream(System.out,true);
+
+            executeBuiltinForPipeline(rightParts,output);
+
+            p1.waitFor();
+
+            drainThread.join();
+
+            return;
+        }
+
+        if(leftBuiltin && rightBuiltin)
+        {
+            PrintStream output=new PrintStream(OutputStream.nullOutputStream(),true);
+
+            executeBuiltinforPipeline(leftParts,output);
+            output.close();
+
+            executeBuiltinForPipeline(rightParts,System.out);
+
+            return;
+
+        }
+
 
     }
 }
