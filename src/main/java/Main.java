@@ -1079,7 +1079,7 @@ public class Main
 
             ProcessBuilder pb2=new ProcessBuilder(rightParts);
 
-            pb2,redirectOutput(ProcessBuilder.Redirect.INHERIT);
+            pb2.redirectOutput(ProcessBuilder.Redirect.INHERIT);
             pb2.redirectError(ProcessBuilder.Redirect.INHERIT);
 
             Process p2=pb2.start();
