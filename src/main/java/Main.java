@@ -21,6 +21,7 @@ public class Main
 {
     static Map<String,String> completionMap=new HashMap<>();
     static List<Job> jobs=new ArrayList<>();
+    static List<String> history=new ArrayList<>();
     static int nextJobNumber=1;
     public static void main(String[] args) throws Exception 
     {
@@ -40,6 +41,11 @@ public class Main
             reapCompletedJobs();
             
             String command=reader.readLine("$ ");
+
+            if(!command.trim().isEmpty())
+            {
+                history.add(command);
+            }
 
             if(command.contains("|"))
             {
@@ -87,10 +93,10 @@ public class Main
             {
                 executeJobs();
             }
-            // else if(commandName.equals("history"))
-            // {
-            //     executeJobs();
-            // }
+            else if(commandName.equals("history"))
+            {
+                executeHistory();
+            }
             else
             {
                 executeExternalCommand(commandParts,redirection,background,command);
@@ -134,6 +140,15 @@ public class Main
         {
             System.out.flush();
             System.setOut(originalOut);
+        }
+    }
+
+    //Method to execute history
+    public static void executeHistory()
+    {
+        for(int i=0;i<history.size();i++)
+        {
+            System.out.printf("%5d %s%n",i+1,history.get(i));
         }
     }
 
