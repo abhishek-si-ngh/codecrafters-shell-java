@@ -95,7 +95,7 @@ public class Main
             }
             else if(commandName.equals("history"))
             {
-                executeHistory();
+                executeHistory(commandParts);
             }
             else
             {
@@ -144,9 +144,16 @@ public class Main
     }
 
     //Method to execute history
-    public static void executeHistory()
+    public static void executeHistory(String commandParts[])
     {
-        for(int i=0;i<history.size();i++)
+        int startIndex=0;
+
+        if(commandParts.length>1)
+        {
+            int n=Integer.parseInt(commandParts[1]);
+            startIndex=Math.max(0,history.size()-n);
+        }
+        for(int i=startIndex;i<history.size();i++)
         {
             System.out.printf("%5d %s%n",i+1,history.get(i));
         }
