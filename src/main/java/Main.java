@@ -1173,9 +1173,9 @@ public class Main
     public static void executeMultiStagePipeline(String command)throws Exception
     {
         String pipelineParts[]=command.split("\\|");
-        List<ProccessBuilder> builders=new ArrayList<>();
+        List<ProcessBuilder> builders=new ArrayList<>();
 
-        for(String pipelinePart:PipelineParts)
+        for(String pipelinePart:pipelineParts)
         {
             String commandPart=pipelinePart.trim();
             String commandParts[]=parseCommand(commandPart);
