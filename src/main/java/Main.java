@@ -105,7 +105,7 @@ public class Main
         || commandName.equals("jobs");
     }
 
-    //Method to execute builti commands for pipeine
+    //Method to execute builti commands for pipeline
     public static void  executeBuiltinForPipeline(String commandParts[],PrintStream output)throws Exception
     {
         PrintStream originalOut=System.out;
@@ -986,7 +986,14 @@ public class Main
 
     public static void executePipeline(String command)throws Exception
     {
-        String pipelineParts[]=command.split("\\|",2);
+        String pipelineParts[]=command.split("\\|");
+
+        if(pipelineParts.length>2)
+        {
+            executeMultiStagePipeline(command);
+            return;
+        }
+
 
         String leftCommand=pipelineParts[0].trim();
         String rightCommand=pipelineParts[1].trim();
@@ -1161,5 +1168,51 @@ public class Main
         }
 
 
+    }
+
+    public static void executeMultiStagePipeline(String command)throws Exception
+    {
+        String pipelineParts[]=command.split("\\|");
+        List<ProccessBuilder> builders=new ArrayList<>();
+
+        for(String pipelinePart:PipelineParts)
+        {
+            String commandPart=pipelinePart.trim();
+            String commandParts[]=parseCommand(commandPart);
+
+            if(commandParts.length==0)
+                continue;
+
+            if(isBuiltin(commandParts[0]))
+            {
+                System.out.println(commandParts[0]+": command not found");
+                return;
+            }
+
+            Path executable=findExecutable(commandParts[0]);
+
+            if(executable==null)
+            {
+                System.out.println(commandParts[0]+": command not found");
+                return;
+            }
+
+            ProcessBuilder pb=new ProcessBuilder(commandParts);
+            pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+            builders.add(pb);
+        }
+
+        if(builders.isEmpty())
+            return;
+
+        builders.get(0).redirectInput(ProcessBuilder.Redirect.INHERIT);
+        builders.get(builders.size()-1).redirectOutput(ProcessBuilder.Redirect.INHERIT);
+
+        List<Process> processes=new ProcessBuilder.startPipeline(builders);
+
+        for(Process process:processes)
+        {
+            process.waitFor();
+        }
     }
 }
