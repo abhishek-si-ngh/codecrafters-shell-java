@@ -1208,7 +1208,7 @@ public class Main
         builders.get(0).redirectInput(ProcessBuilder.Redirect.INHERIT);
         builders.get(builders.size()-1).redirectOutput(ProcessBuilder.Redirect.INHERIT);
 
-        List<Process> processes=new ProcessBuilder.startPipeline(builders);
+        List<Process> processes=ProcessBuilder.startPipeline(builders);
 
         for(Process process:processes)
         {
