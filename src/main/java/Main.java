@@ -2,6 +2,7 @@ import java.util.*;
 import java.util.concurrent.CompletionService;
 import java.io.*;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.jline.reader.Candidate;
@@ -22,6 +23,7 @@ public class Main
     static Map<String,String> completionMap=new HashMap<>();
     static List<Job> jobs=new ArrayList<>();
     static List<String> history=new ArrayList<>();
+    static List<String> pendingHistoryAppend=new  ArrayList<>();
     static int nextJobNumber=1;
     public static void main(String[] args) throws Exception 
     {
@@ -45,6 +47,7 @@ public class Main
             if(!command.trim().isEmpty())
             {
                 history.add(command);
+                pendingHistoryAppending.add(command);
             }
 
             if(command.contains("|"))
@@ -172,6 +175,17 @@ public class Main
             Files.write(Paths.get(filePath),history,StandardCharsets.UTF_8);
             return;
         }
+
+        if(commandParts.length>=3 && commandParts[1].equals("-a"))
+        {
+            String filePath=commandParts[2];
+
+            Files.write(Paths.get(filePath),pendingHistoryAppend,StandardCharsets.UTF_8,StandardOpenOption.CREATE,StandardOpenOption.APPEND);
+            pendingHistoryAppend.clear();
+
+            return;
+        }
+
         int startIndex=0;
 
         if(commandParts.length>1)
@@ -184,6 +198,7 @@ public class Main
             System.out.printf("%5d %s%n",i+1,history.get(i));
         }
     }
+
 
     //Command Completion
     public static Set<String> findCompletionMatches(String word)
