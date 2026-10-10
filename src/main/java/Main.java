@@ -1331,7 +1331,7 @@ public class Main
         {
             String variableName=commandParts[2];
 
-            System.out.println("declare: "+variableName+" :not found");
+            System.out.println("declare: "+variableName+": not found");
         }
     }
 }
