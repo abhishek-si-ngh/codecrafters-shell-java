@@ -169,7 +169,7 @@ public class Main
         if((commandParts.length>=3 && commandParts[1].equals("-w")))
         {
             String filePath=commandParts[2];
-            Files.write(Paths.get(filePath),history,StandardCharacters.UTF_8);
+            Files.write(Paths.get(filePath),history,StandardCharsets.UTF_8);
             return;
         }
         int startIndex=0;
