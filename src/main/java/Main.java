@@ -146,6 +146,25 @@ public class Main
     //Method to execute history
     public static void executeHistory(String commandParts[])
     {
+
+        if(commandParts.length>=3 && commandParts[1].equals("-r"))
+        {
+            String filePath=commandParts[2];
+
+            try(BufferReader br=Files.newBufferedReader(Paths.get(filePath)))
+            {
+                String line;
+
+                while((line=br.readLine())!=null)
+                {
+                    if(!line.isBlank())
+                    {
+                        history.add(line);
+                    }
+                }
+                return;
+            }
+        }
         int startIndex=0;
 
         if(commandParts.length>1)
