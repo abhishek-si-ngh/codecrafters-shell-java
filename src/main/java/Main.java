@@ -1354,12 +1354,23 @@ public class Main
             String assignment=commandParts[i];
             int equalsIndex=assignment.indexOf('=');
 
-            if(equalsIndex>0)
+            if(equalsIndex>=00)
             {
                 String variableName=assignment.substring(0,equalsIndex);
                 String value=assignment.substring(equalsIndex+1);
+
+                if(!isValidIndentifier(variableName))
+                {
+                    System.out.println("declare: `"+assignment+"`: not a valid identifier");
+                    continue;
+                }
                 shellVariables.put(variableName,value);
             }
         }
+    }
+
+    public static boolean isValidIndetifier(String name)
+    {
+        return name.matches("[A-Za-z_][A-Za-z0-9_]*");
     }
 }
