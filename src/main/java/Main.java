@@ -37,6 +37,28 @@ public class Main
         reader.getKeyMaps()
         .get(LineReader.MAIN)
         .bind(tabWidget, KeyMap.ctrl('I'));
+
+        String histFile=System.getenv("HISTFILE");
+
+        if(histFile!=null && !histFile.isBlank())
+        {
+            Path historyPath=Paths.get(histFile);
+
+            if(Files.exists(historyPath))
+            {
+                List<String> savedCommands=Files.readAllLines(historyPath,StandardCharsets.UTF_8);
+
+                for(String savedCommand:savedCommands)
+                {
+                    if(!savedCommand.isBlank())
+                    {
+                        history.add(savedCommand);
+
+                        reader.getHistory().add(savedCommand);
+                    }
+                }
+            }
+        }
         
         while(true)
         {
@@ -105,6 +127,12 @@ public class Main
                 executeExternalCommand(commandParts,redirection,background,command);
             }
         }
+
+        if(histFile!=null && !histFile.isBlank())
+        {
+            Files.write(Paths.get(histFile),history,StandardCharsets.UTF_8);
+        }
+
         terminal.close();
     }
 
