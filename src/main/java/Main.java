@@ -145,7 +145,7 @@ public class Main
 
     public static String expandVariables(String word)
     {
-        Pattern pattren=Pattern.compile("\\$([A-Za-z_][A-Za-z0-9_]*");
+        Pattern pattern=Pattern.compile("\\$([A-Za-z_][A-Za-z0-9_]*");
         Matcher matcher=pattern.matcher(word);
 
         StringBuffer result=new StringBuffer();
