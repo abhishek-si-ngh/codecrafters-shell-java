@@ -1142,11 +1142,8 @@ public class Main
         String rightCommand=pipelineParts[1].trim();
         
         
-        String leftParts[]=parseCommand(leftCommand);
-        String rightParts[]=parseCommand(rightCommand);
-
-        leftParts=expandArguments(leftParts);
-        rightParts=expandArguments(rightParts);
+        String leftParts[]=expandArguments(parseCommand(leftCommand));
+        String rightParts[]=expandArguments(parseCommand(rightCommand));
         
         boolean leftBuiltin=isBuiltin(leftParts[0]);
         boolean rightBuiltin=isBuiltin(rightParts[0]);
