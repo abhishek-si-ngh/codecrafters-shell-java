@@ -122,10 +122,10 @@ public class Main
             {
                 executeHistory(commandParts);
             }
-            // else if(commandName.equals("declare"))
-            // {
-            //     executeDeclare(commandParts);
-            // }
+            else if(commandName.equals("declare"))
+            {
+                executeDeclare(commandParts);
+            }
             else
             {
                 executeExternalCommand(commandParts,redirection,background,command);
@@ -1322,6 +1322,16 @@ public class Main
         for(Process process:processes)
         {
             process.waitFor();
+        }
+    }
+
+    public static void executeDeclare(String commandParts[])
+    {
+        if(commandParts.length>=3 && commandParts[1].equals("-p"))
+        {
+            String variableName=commandParts[2];
+
+            System.out.println("declare: "+variableName+" :not found");
         }
     }
 }
