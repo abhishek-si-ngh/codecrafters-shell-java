@@ -1359,7 +1359,7 @@ public class Main
                 String variableName=assignment.substring(0,equalsIndex);
                 String value=assignment.substring(equalsIndex+1);
 
-                if(!isValidIndentifier(variableName))
+                if(!isValidIdentifier(variableName))
                 {
                     System.out.println("declare: `"+assignment+"`: not a valid identifier");
                     continue;
@@ -1369,7 +1369,7 @@ public class Main
         }
     }
 
-    public static boolean isValidIndetifier(String name)
+    public static boolean isValidIdentifier(String name)
     {
         return name.matches("[A-Za-z_][A-Za-z0-9_]*");
     }
