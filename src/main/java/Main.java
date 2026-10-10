@@ -1361,7 +1361,7 @@ public class Main
 
                 if(!isValidIdentifier(variableName))
                 {
-                    System.out.println("declare: `"+assignment+"`: not a valid identifier");
+                    System.out.println("declare: `"+assignment+"\': not a valid identifier");
                     continue;
                 }
                 shellVariables.put(variableName,value);
