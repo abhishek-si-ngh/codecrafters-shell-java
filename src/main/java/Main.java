@@ -15,6 +15,8 @@ import org.jline.terminal.TerminalBuilder;
 import org.jline.reader.Widget;
 import org.jline.keymap.KeyMap;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 
@@ -139,6 +141,37 @@ public class Main
         }
 
         terminal.close();
+    }
+
+    public static String expandVariables(String word)
+    {
+        Pattern pattren=Pattern.compile("\\$([A-Za-z_][A-Za-z0-9_]*");
+        Matcher matcher=pattern.matcher(word);
+
+        StringBuffer result=new StringBuffer();
+
+        while(matcher.find())
+        {
+            String variableName=matcher.group(1);
+
+            String value=shellVariables.getOrDefault(variableName,"");
+            matcher.appendReplacement(result,Matcher.quoteReplacement(value));
+        }
+
+        matcher.appendTail(result);
+        return result.toString();
+    }
+
+    public static String[] expandArguments(String commandParts[])
+    {
+        String expandParts[]=new String[commandParts.length];
+
+        for(int i=0;i<commandParts.length;i++)
+        {
+            expandParts[i]=expandVariables(commandParts[i]);
+        }
+
+        return expandParts;
     }
 
     //Method to check if a command is a builin command
@@ -1111,6 +1144,9 @@ public class Main
         
         String leftParts[]=parseCommand(leftCommand);
         String rightParts[]=parseCommand(rightCommand);
+
+        leftParts=expandArguments(leftParts);
+        rightParts=expandArguments(rightParts);
         
         boolean leftBuiltin=isBuiltin(leftParts[0]);
         boolean rightBuiltin=isBuiltin(rightParts[0]);
@@ -1289,6 +1325,7 @@ public class Main
         {
             String commandPart=pipelinePart.trim();
             String commandParts[]=parseCommand(commandPart);
+            commandParts=expandArguments(commandParts);
 
             if(commandParts.length==0)
                 continue;
