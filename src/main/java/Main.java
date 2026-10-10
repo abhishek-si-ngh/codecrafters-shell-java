@@ -122,6 +122,10 @@ public class Main
             {
                 executeHistory(commandParts);
             }
+            // else if(commandName.equals("declare"))
+            // {
+            //     executeDeclare(commandParts);
+            // }
             else
             {
                 executeExternalCommand(commandParts,redirection,background,command);
@@ -144,7 +148,8 @@ public class Main
         || commandName.equals("type")
         || commandName.equals("complete")
         || commandName.equals("jobs")
-        || commandName.equals("history");
+        || commandName.equals("history")
+        || commandName.equals("declare");
     }
 
     //Method to execute builti commands for pipeline
@@ -246,6 +251,8 @@ public class Main
             matches.add("jobs");
         if("history".startsWith(word))
             matches.add("history");
+        if("declare".startsWith(word))
+            matches.add("declare");
 
         //External executables
 
@@ -862,6 +869,8 @@ public class Main
         else if(target.equals("jobs"))
             System.out.println(target+" is a shell builtin");
         else if(target.equals("history"))
+            System.out.println(target+" is a shell builtin");
+        else if(target.equals("declare"))
             System.out.println(target+" is a shell builtin");
         else
         {
