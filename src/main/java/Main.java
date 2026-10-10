@@ -1340,7 +1340,7 @@ public class Main
             {
                 String value=shellVariables.get(variableName);
 
-                System.out.printf("deckare -- %s=\"%s\"%n",variableName,value);
+                System.out.printf("declare -- %s=\"%s\"%n",variableName,value);
             }
             else
             {
