@@ -144,14 +144,14 @@ public class Main
     }
 
     //Method to execute history
-    public static void executeHistory(String commandParts[])
+    public static void executeHistory(String commandParts[])throws IOException
     {
 
         if(commandParts.length>=3 && commandParts[1].equals("-r"))
         {
             String filePath=commandParts[2];
 
-            try(BufferReader br=Files.newBufferedReader(Paths.get(filePath)))
+            try(BufferedReader br=Files.newBufferedReader(Paths.get(filePath)))
             {
                 String line;
 
