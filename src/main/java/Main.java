@@ -130,7 +130,7 @@ public class Main
 
         if(histFile!=null && !histFile.isBlank())
         {
-            Files.write(Paths.get(histFile),history,StandardCharsets.UTF_8);
+            Files.write(Paths.get(histFile),pendingHistoryAppend,StandardOpenOption.CREATE,StandardOpenOption.APPEND);
         }
 
         terminal.close();
