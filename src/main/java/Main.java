@@ -24,6 +24,7 @@ public class Main
     static List<Job> jobs=new ArrayList<>();
     static List<String> history=new ArrayList<>();
     static List<String> pendingHistoryAppend=new  ArrayList<>();
+    static Map<String,String> shellVariables=new HashMap<>();
     static int nextJobNumber=1;
     public static void main(String[] args) throws Exception 
     {
@@ -1327,11 +1328,38 @@ public class Main
 
     public static void executeDeclare(String commandParts[])
     {
-        if(commandParts.length>=3 && commandParts[1].equals("-p"))
+        if(commandParts.length>=2 && commandParts[1].equals("-p"))
         {
+            if(commandParts.length<3)
+                return;
+
+
             String variableName=commandParts[2];
 
-            System.out.println("declare: "+variableName+": not found");
+            if(shellVariables.containsKey(variableName))
+            {
+                String value=shellVariables.get(variableName);
+
+                System.out.printf("deckare --- %s=\"%s\"%n",variableName,value);
+            }
+            else
+            {
+                System.out.println("declare: "+variableName+": not found");
+            }
+            return;
+        }
+
+        for(int i=1;i<commandParts.length;i++)
+        {
+            String assignment=commandParts[i];
+            int equalsIndex=assignment.indexOf('=');
+
+            if(equalsIndex>0)
+            {
+                String variableName=assignment.substring(0,equalsIndex);
+                String value=assignment.substring(equalsIndex+1);
+                shellVariables.put(variableName,value);
+            }
         }
     }
 }
