@@ -165,6 +165,13 @@ public class Main
                 return;
             }
         }
+
+        if((commandParts.length>=3 && commandParts[1].equals("-w")))
+        {
+            String filePath=commandParts[2];
+            Files.write(Paths.get(filePath),history,StandardCharacters.UTF_8);
+            return;
+        }
         int startIndex=0;
 
         if(commandParts.length>1)
