@@ -83,6 +83,7 @@ public class Main
 
             //Parsing command
             String commandParts[]=parseCommand(command);
+            commandParts=expandArguments(commandParts);
 
             boolean background=false;
             if(commandParts.length>0 && commandParts[commandParts.length-1].equals("&"))
