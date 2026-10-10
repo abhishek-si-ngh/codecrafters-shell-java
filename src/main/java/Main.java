@@ -47,7 +47,7 @@ public class Main
             if(!command.trim().isEmpty())
             {
                 history.add(command);
-                pendingHistoryAppending.add(command);
+                pendingHistoryAppend.add(command);
             }
 
             if(command.contains("|"))
