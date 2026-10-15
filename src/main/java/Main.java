@@ -146,14 +146,18 @@ public class Main
 
     public static String expandVariables(String word)
     {
-        Pattern pattern=Pattern.compile("\\$([A-Za-z_][A-Za-z0-9_]*)");
+        Pattern pattern=Pattern.compile("\\$\\{([A-Za-z_][A-Za-z0-9_]*)\\}|\\$([A-Za-z_][A-Za-z0-9_]*)");
         Matcher matcher=pattern.matcher(word);
 
         StringBuffer result=new StringBuffer();
 
         while(matcher.find())
         {
-            String variableName=matcher.group(1);
+            String variableName;
+            if(matcher.group(1)!=null)
+                variableName=matcher.group(1);
+            else
+                variableName=matcher.group(2);
 
             String value=shellVariables.getOrDefault(variableName,"");
             matcher.appendReplacement(result,Matcher.quoteReplacement(value));
