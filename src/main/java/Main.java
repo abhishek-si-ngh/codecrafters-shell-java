@@ -85,6 +85,9 @@ public class Main
             String commandParts[]=parseCommand(command);
             commandParts=expandArguments(commandParts);
 
+            if(commandParts.length==0)
+                continue;
+
             boolean background=false;
             if(commandParts.length>0 && commandParts[commandParts.length-1].equals("&"))
             {
@@ -129,6 +132,10 @@ public class Main
             else if(commandName.equals("declare"))
             {
                 executeDeclare(commandParts);
+            }
+            else if(commandName.equals("pwd"))
+            {
+                executePwd(commandParts);
             }
             else
             {
@@ -184,6 +191,11 @@ public class Main
         return expandedParts.toArray(new String[0]);
     }
 
+    public static void executePwd()
+    {
+        System.out.println(Paths.get("").toAbsolutePath().normalize());
+    }
+
     //Method to check if a command is a builin command
     public static boolean isBuiltin(String commandName)
     {
@@ -193,7 +205,8 @@ public class Main
         || commandName.equals("complete")
         || commandName.equals("jobs")
         || commandName.equals("history")
-        || commandName.equals("declare");
+        || commandName.equals("declare")
+        || commandName.equals("pwd");
     }
 
     //Method to execute builti commands for pipeline
@@ -215,6 +228,10 @@ public class Main
                 executeComplete(commandParts);
             else if(commandName.equals("jobs"))
                 executeJobs();
+            else if(commandName.equals("declare"))
+                executeDeclare();
+            else if(commandName.equals("pwd"))
+                executePwd();
         }
         finally
         {
@@ -297,6 +314,8 @@ public class Main
             matches.add("history");
         if("declare".startsWith(word))
             matches.add("declare");
+        if("pwd".startsWith(word))
+            matches.add("pwd");
 
         //External executables
 
@@ -915,6 +934,8 @@ public class Main
         else if(target.equals("history"))
             System.out.println(target+" is a shell builtin");
         else if(target.equals("declare"))
+            System.out.println(target+" is a shell builtin");
+        else if(target.equals("pwd"))
             System.out.println(target+" is a shell builtin");
         else
         {
