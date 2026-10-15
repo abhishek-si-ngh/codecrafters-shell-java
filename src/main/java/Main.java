@@ -209,7 +209,7 @@ public class Main
         String requestedDirectory=commandParts[1];
         String directory=requestedDirectory;
 
-        if(directory.equals("~") || directory.equlas("~/"))
+        if(directory.equals("~") || directory.equals("~/"))
         {
             String home=System.getenv("HOME");
 
