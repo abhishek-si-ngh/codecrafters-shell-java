@@ -27,6 +27,7 @@ public class Main
     static List<String> history=new ArrayList<>();
     static List<String> pendingHistoryAppend=new  ArrayList<>();
     static Map<String,String> shellVariables=new HashMap<>();
+    static Path currentDirectory=Paths.get("").toAbsolutePath().normalize();
     static int nextJobNumber=1;
     public static void main(String[] args) throws Exception 
     {
@@ -137,6 +138,10 @@ public class Main
             {
                 executePwd();
             }
+            else if(commandName.equals("cd"))
+            {
+                executeCd(commandParts);
+            }
             else
             {
                 executeExternalCommand(commandParts,redirection,background,command);
@@ -193,7 +198,30 @@ public class Main
 
     public static void executePwd()
     {
-        System.out.println(Paths.get("").toAbsolutePath().normalize());
+        System.out.println(currentDirectory);
+    }
+
+    public static void executeCd(String commandParts[])
+    {
+        if(commandParts.length<2)
+            return;
+
+        String directory=commandParts[1];
+        Path target=Paths.get(directory);
+
+        if(!target.isAbsolute())
+            target=currentDirectory.resolve(target);
+
+        target=target.normalize();
+
+        if(Files.isDirectory(target))
+        {
+            currentDirectory=target.toAbsolutePath();
+        }
+        else
+        {
+            System.out.println("cd: "+directory+": No such file or directory");
+        }
     }
 
     //Method to check if a command is a builin command
@@ -206,7 +234,8 @@ public class Main
         || commandName.equals("jobs")
         || commandName.equals("history")
         || commandName.equals("declare")
-        || commandName.equals("pwd");
+        || commandName.equals("pwd")
+        || commandName.equals("cd");
     }
 
     //Method to execute builti commands for pipeline
@@ -232,6 +261,8 @@ public class Main
                 executeDeclare(commandParts);
             else if(commandName.equals("pwd"))
                 executePwd();
+            else if(commandName.equals("cd"))
+                executeCd(commandParts);
         }
         finally
         {
@@ -316,6 +347,8 @@ public class Main
             matches.add("declare");
         if("pwd".startsWith(word))
             matches.add("pwd");
+        if("cd".startsWith(word))
+            matches.add("cd");
 
         //External executables
 
@@ -936,6 +969,8 @@ public class Main
         else if(target.equals("declare"))
             System.out.println(target+" is a shell builtin");
         else if(target.equals("pwd"))
+            System.out.println(target+" is a shell builtin");
+        else if(target.equals("cd"))
             System.out.println(target+" is a shell builtin");
         else
         {
