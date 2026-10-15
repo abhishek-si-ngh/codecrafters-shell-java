@@ -135,7 +135,7 @@ public class Main
             }
             else if(commandName.equals("pwd"))
             {
-                executePwd(commandParts);
+                executePwd();
             }
             else
             {
@@ -229,7 +229,7 @@ public class Main
             else if(commandName.equals("jobs"))
                 executeJobs();
             else if(commandName.equals("declare"))
-                executeDeclare();
+                executeDeclare(commandParts);
             else if(commandName.equals("pwd"))
                 executePwd();
         }
