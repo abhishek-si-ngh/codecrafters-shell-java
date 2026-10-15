@@ -169,14 +169,19 @@ public class Main
 
     public static String[] expandArguments(String commandParts[])
     {
-        String expandParts[]=new String[commandParts.length];
+        List<String> expandedParts=new ArrayList<>();
 
-        for(int i=0;i<commandParts.length;i++)
+        for(String part:commandParts)
         {
-            expandParts[i]=expandVariables(commandParts[i]);
+            String expanded=expandVariables(part);
+
+            if(!expanded.isEmpty())
+            {
+                expandedParts.add(expanded);
+            }
         }
 
-        return expandParts;
+        return expandedParts.toArray(new String[0]);
     }
 
     //Method to check if a command is a builin command
