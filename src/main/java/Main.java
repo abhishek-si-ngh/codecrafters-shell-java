@@ -221,7 +221,7 @@ public class Main
                 }
                 else
                 {
-                    directory=PAths.get(home).resolve(directory.substring(2)).toString();
+                    directory=Paths.get(home).resolve(directory.substring(2)).toString();
                 }
             }
         }
