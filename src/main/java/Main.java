@@ -206,21 +206,40 @@ public class Main
         if(commandParts.length<2)
             return;
 
-        String directory=commandParts[1];
+        String requestedDirectory=commandParts[1];
+        String directory=requestedDirectory;
+
+        if(directory.equals("~") || directory.equlas("~/"))
+        {
+            String home=System.getenv("HOME");
+
+            if(home!=null && !home.isBlank())
+            {
+                if(directory.equals("~"))
+                {
+                    directory=home;
+                }
+                else
+                {
+                    directory=PAths.get(home).resolve(directory.substring(2)).toString();
+                }
+            }
+        }
+
         Path target=Paths.get(directory);
 
         if(!target.isAbsolute())
             target=currentDirectory.resolve(target);
 
-        target=target.normalize();
+        target=target.toAbsolutePath().normalize();
 
         if(Files.isDirectory(target))
         {
-            currentDirectory=target.toAbsolutePath();
+            currentDirectory=target;
         }
         else
         {
-            System.out.println("cd: "+directory+": No such file or directory");
+            System.out.println("cd: "+requestedDirectory+": No such file or directory");
         }
     }
 
